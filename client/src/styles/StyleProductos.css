@@ -1,0 +1,276 @@
+/* Estilo para la pagina Productos*/
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:sans-serif;
+}
+
+.buscador-productos{
+  display:flex;
+  flex-direction:column;   
+  align-items:stretch;     
+  gap:12px;
+  margin:20px;
+  color:#c47a6d;
+}
+
+.buscador-productos input[type="search"],
+.buscador-productos select{
+  width:100%;
+  max-width:100%;
+  border:none;
+  border-bottom:2px solid #a0522d;
+  border-radius:8px;
+  box-shadow:0 4px 8px rgba(0,0,0,.1);
+  padding:8px 10px;
+  background-color:rgba(245,230,211,.8);
+  color:#c47a6d;
+  font-size:14px;
+  height:36px;
+}
+
+.catalogo-header label,
+.filtros label {
+  font-family: "Poppins", sans-serif;     /* tipografía moderna y limpia */
+  color: #704a2a;                         /* marrón suave, combina con #a0522d */
+  font-weight: 500;                       /* ni tan grueso ni tan fino */
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+  margin-right: 6px;
+}
+
+.contenedor-tarjetas{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+  gap:20px;
+  margin:20px;
+  justify-items:center;
+  max-width: 100%;
+}
+
+.productos-container{
+  display:flex;
+  flex-direction:column;    
+  gap:20px;
+  padding:20px;
+  background-color:#fafafa;
+}
+
+.filtros{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  align-items:stretch;
+  background:#fff;
+  padding:15px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+.filtros h2{
+  margin-bottom:12px;
+  font-size:1rem;
+  color:#a0522d;
+}
+
+.filtro-seccion{
+  margin-bottom:16px;        
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:8px;
+  padding-bottom:12px;
+  border-bottom:1px solid #f0d8c0;
+}
+.filtro-seccion h3{
+  margin:0 0 6px 0;
+  color:#c47a6d;
+  font-size:.95rem;
+  font-weight:600;
+}
+.filtro-seccion ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+  width:100%;
+}
+.filtro-seccion li,
+.filtro-seccion label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#333;
+  font-size:.85rem;
+  cursor:pointer;
+  line-height:1.4;
+}
+.filtro-seccion input[type="checkbox"],
+.filtro-seccion input[type="radio"]{
+  accent-color:#a0522d;
+  transform:scale(1.1);
+  cursor:pointer;
+}
+
+.btn-limpiar{
+  align-self:stretch;
+  background-color:#a0522d;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  padding:10px 16px;
+  font-size:14px;
+  cursor:pointer;
+  margin-top:10px;
+  transition:background-color .3s ease;
+  font-weight:600;
+}
+.btn-limpiar:hover{ background-color:#7a3e20; }
+
+/* mostrar/ocultar filtros (solo mobile) */
+.btn-toggle-filtros{
+  background-color:#a0522d;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:10px 16px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  width:90%;
+  margin:10px auto;
+  transition:background-color .3s ease;
+  display:block;
+}
+.btn-toggle-filtros:hover{ background-color:#7a3e20; }
+
+.ocultar-filtros{ display:none !important; }
+.mostrar-filtros{
+  display:block !important;
+  animation:slideDown .3s ease forwards;
+}
+.catalogo-header input[type="search"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #a0522d;               
+  border-radius: 10px;
+  background-color: rgba(245, 230, 211, 0.6); 
+  color: #5b3a29;                             
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.catalogo-header input[type="search"]:focus {
+  border-color: #c47a6d;                      
+  background-color: rgba(245, 230, 211, 0.85);
+  box-shadow: 0 0 6px rgba(196, 122, 109, 0.3);
+}
+
+.catalogo-header select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #a0522d;                
+  border-radius: 10px;
+  background-color: rgba(245, 230, 211, 0.6); 
+  color: #5b3a29;                             
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #a0522d 50%),
+                    linear-gradient(135deg, #a0522d 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(1.2em),
+                       calc(100% - 15px) calc(1.2em);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.catalogo-header select:focus {
+  border-color: #c47a6d;                      
+  background-color: rgba(245, 230, 211, 0.85);
+  box-shadow: 0 0 6px rgba(196, 122, 109, 0.3);
+}
+
+
+/* da efecto al desplegar los filtros en mobile*/
+@keyframes slideDown{
+  from{ opacity:0; transform:translateY(-10px); }
+  to{   opacity:1; transform:translateY(0); }
+}
+
+@media (min-width:768px){
+
+  /* en desktop no se muestra el botón de toggle y los filtros quedan visibles */
+  .btn-toggle-filtros{ display:none; }
+  .filtros{ display:block !important; }
+
+  .productos-container{
+    display:grid;
+    grid-template-columns:250px 1fr;
+    gap:25px;
+    padding:30px 40px;
+  }
+
+  .catalogo-header{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+  .catalogo-header input[type="search"]{
+    padding:6px 10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    max-width:320px;
+  }
+  .catalogo-header select{
+    padding:6px 10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    background:#fff;
+  }
+
+  .buscador-productos{
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    gap:12px;
+    max-width:900px;
+    margin:20px auto;
+  }
+  .buscador-productos input[type="search"]{
+    flex:1;
+    max-width:420px;
+    height:36px;
+    padding:0 12px;
+  }
+  .buscador-productos label{
+    margin-left:auto;
+    margin-right:6px;
+    margin-top:10px;
+    font-weight:600;
+    font-size:14px;
+    color:#c47a6d;
+  }
+  .buscador-productos select{
+    width:auto;
+    min-width:180px;
+    height:36px;
+    padding:0 10px;
+    border:1px solid #a0522d;
+    border-radius:6px;
+    background-color:rgba(245,230,211,.8);
+    color:#c47a6d;
+    font-size:13px;
+    box-shadow:0 2px 4px rgba(0,0,0,.1);
+  }
+
+  main{
+    z-index:1;
+    margin-top:20px;
+    padding:1rem;
+  }
+}

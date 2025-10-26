@@ -1,0 +1,234 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+    --clr-backg: #F5E6D3;
+    --clr-secondary: #87A96B;
+    --clr-detail: #D4A437;
+    --clr-title: #A0522D;
+}
+
+/* Carrito lateral */
+.carrito-lateral {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 350px;
+    height: 100%;
+    background: var(--clr-backg);
+    box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.carrito-lateral.abierto {
+    right: 0;
+}
+
+.carrito-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.carrito-header h2{
+    font-family: "Playfair Display", sans-serif;
+    color: var(--clr-title);
+}
+
+#cerrar-carrito {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.carrito-productos {
+    flex: 1;
+    overflow-y: auto;
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.carrito-producto {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    padding: 0.5rem;
+}
+
+.carrito-producto img {
+    width: 60px;
+    border-radius: 8px;
+    background-color: var(--clr-backg);
+}
+
+.carrito-info h4 {
+    margin-bottom: 0.25rem;
+}
+
+.carrito-controles {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.carrito-controles button {
+    background: var(--clr-secondary);
+    border: none;
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+.carrito-controles button:hover {
+    background: var(--clr-detail);
+}
+
+.btn-eliminar {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: red;
+}
+
+/* Carrito footer */
+.carrito-footer {
+    border-top: 1px solid #ccc;
+    padding-top: 1rem;
+    text-align: center;
+}
+
+.btn-pagar {
+    display: block;
+    background: var(--clr-secondary);
+    color: #fff;
+    text-align: center;
+    padding: 0.75rem;
+    border-radius: 2rem;
+    margin-top: 1rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-pagar:hover {
+    background: var(--clr-detail);
+    color: #fff;
+}
+
+/* Overlay */
+#overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    z-index: 900;
+}
+
+#overlay.activo {
+    display: block;
+}
+
+/* Notificaciones */
+.notificaciones {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2000;
+}
+
+.toast {
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateX(100%);
+    animation: slideIn 0.3s forwards, fadeOut 0.3s 2.5s forwards;
+    font-weight: bold;
+}
+
+.toast.info {
+    background: var(--clr-secondary);
+    color: white;
+}
+
+.toast.success {
+    background: #28a745;
+    color: white;
+}
+
+.toast.error {
+    background: #dc3545;
+    color: white;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* Animaciones carrito icono y numerito */
+@keyframes bounce {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.3); }
+    50%  { transform: scale(0.9); }
+    70%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes vibrar {
+    0% { transform: rotate(0deg); }
+    20% { transform: rotate(-15deg); }
+    40% { transform: rotate(15deg); }
+    60% { transform: rotate(-10deg); }
+    80% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
+}
+
+#numerito.animar {
+    animation: bounce 0.4s;
+}
+
+#carrito-icono.animar {
+    animation: vibrar 0.5s ease;
+}
+
+.producto-cantidad {
+  display: inline-block;
+}
+
+.producto-cantidad.bounce {
+  animation: bounce 0.3s;
+}
+
+@keyframes bounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
