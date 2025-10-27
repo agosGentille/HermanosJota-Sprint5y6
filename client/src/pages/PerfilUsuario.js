@@ -4,7 +4,13 @@ import '../styles/PerfilUsuario.css';
 function PerfilUsuario({ onLogout }) {
   const [usuario, setUsuario] = useState({
     nombre: "",
-    email: ""
+    email: "",
+    dni: "",
+    telefono: "",
+    direccionCalle: "",
+    direccionLocalidad: "",
+    direccionProvincia: "",
+    direccionPais: "" 
   });
   const [editable, setEditable] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,6 +46,10 @@ useEffect(() => {
           email: data.usuario.email || "",
           dni: data.usuario.dni || "",
           telefono: data.usuario.telefono || "",
+          direccionCalle: data.usuario.direccionCalle || "",
+          direccionLocalidad: data.usuario.direccionLocalidad || "" ,
+          direccionProvincia: data.usuario.direccionProvincia || "" ,
+          direccionPais: data.usuario.direccionPais || "" 
         });
         setLoading(false);
       } catch (err) {
@@ -147,6 +157,38 @@ useEffect(() => {
           type="telefono"
           name="telefono" 
           value={usuario.telefono ? usuario.telefono : ""}
+          onChange={handleChange}
+        />
+
+        <label>Calle y Número:</label>
+        <input
+          type="text"
+          name="direccionCalle"
+          value={usuario.direccionCalle || ""}
+          onChange={handleChange}
+        />
+
+        <label>Localidad:</label>
+        <input
+          type="text"
+          name="direccionLocalidad"
+          value={usuario.direccionLocalidad || ""}
+          onChange={handleChange}
+        />
+
+        <label>Provincia:</label>
+        <input
+          type="text"
+          name="direccionProvincia"
+          value={usuario.direccionProvincia || ""}
+          onChange={handleChange}
+        />
+
+        <label>País:</label>
+        <input
+          type="text"
+          name="direccionPais"
+          value={usuario.direccionPais || ""}
           onChange={handleChange}
         />
 
