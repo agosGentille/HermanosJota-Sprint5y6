@@ -1,7 +1,8 @@
 require("dotenv").config();
 const express = require("express");
+const mongoose = require("mongoose");
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 const cors = require("cors");
 const path = require("path");
@@ -11,8 +12,17 @@ const productosRoutes = require("./routes/productos.js");
 const contactoRoutes = require("./routes/ContactRoutes.js");
 const carritoRoutes = require("./routes/carritoRoutes");
 
+const DB_URI = "mongodb+srv://hermanosjota:hermanosjota@cluster0.xsxpb32.mongodb.net/catalogo?retryWrites=true&w=majority";
+
+
+mongoose.connect(DB_URI)
+    .then(() => console.log("Conexión exitosa a MongoDB"))
+    .catch(err => console.error("Error al conectar a MongoDB:", err));
+
+
 app.use(cors()); // permite leer JSON en req.body
 app.use(express.json()); //parsea JSON para que no llegue undefined
+
 
 //Middleware global que muestre método y url de la petición (Punto 4 consigna final)
 app.use((req, res, next) => {
