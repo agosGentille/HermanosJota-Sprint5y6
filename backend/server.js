@@ -5,6 +5,8 @@ const PORT = 4000;
 
 const cors = require("cors");
 const path = require("path");
+const conectarDB = require("./database.js");
+conectarDB();
 
 const authRoutes = require("./routes/authRoutes.js");
 const productosRoutes = require("./routes/productos.js");

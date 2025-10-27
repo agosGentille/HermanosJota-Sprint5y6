@@ -1,43 +1,74 @@
-const usuarios = require("../data/usuarios");
+const User = require("../models/users");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 // LOGIN
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   const { email, password } = req.body;
 
-  // Buscar en el array d usuairos
-  const usuario = usuarios.find(u => u.email === email);
+  try {
+    const usuario = await User.findOne({ email });
 
-  if (!usuario || usuario.password !== password) {
-    return res.status(401).json({ error: "Credenciales inválidas" });
-  }
-
-  // Token falso temporal (en el futuro podemos usar alguno real, JWT x ej, q expire cada cierto tiempo)
-  const token = "fake-token-" + usuario.id;
-
-  res.json({
-    token,
-    usuario: {
-      nombre: usuario.nombre,
-      email: usuario.email
+    if (!usuario) {
+      return res.status(401).json({ error: "Usuario no encontrado" });
     }
-  });
+
+    const passwordValida = await bcrypt.compare(password, usuario.clave);
+    if (!passwordValida && password !== usuario.clave) {
+      return res.status(401).json({ error: "Credenciales inválidas" });
+    }
+
+    const token = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.json({
+      token,
+      usuario: {
+        nombre: usuario.nombreCompleto,
+        email: usuario.email,
+        rol: usuario.rol,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
 
-// REGISTRO TEMPORAL - Los usuarios registrados existen en el servidor mientras este
-//corriendo. Si se reinicia NODE, se pierde todo.
-exports.register = (req, res) => {
-  const { nombre, email, password } = req.body;
+// REGISTRO
+exports.register = async (req, res) => {
+  const { nombreCompleto, email, clave, rol } = req.body;
 
-  if (!nombre || !email || !password) return res.status(400).json({ error: "Faltan datos" });
+  try {
+    const existe = await User.findOne({ email });
+    if (existe) return res.status(400).json({ error: "El usuario ya existe" });
 
-  // Chequea si el usuario ya existe (email ya registrado)
-  const existe = usuarios.some(u => u.email === email);
-  if (existe) return res.status(400).json({ error: "El usuario ya existe" });
+    const hashedPassword = await bcrypt.hash(clave, 10);
 
-  const id = usuarios.length ? usuarios[usuarios.length - 1].id + 1 : 1;
-  const nuevoUsuario = { id, nombre, email, password };
-  usuarios.push(nuevoUsuario);
+    const nuevoUsuario = new User({
+      nombreCompleto,
+      email,
+      clave: hashedPassword,
+      rol: rol || "visitante",
+    });
 
-  const token = "fake-token-" + id;
-  res.json({ token, usuario: nuevoUsuario });
+    await nuevoUsuario.save();
+
+    const token = jwt.sign({ id: nuevoUsuario._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.json({
+      token,
+      usuario: {
+        nombre: nuevoUsuario.nombreCompleto,
+        email: nuevoUsuario.email,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
