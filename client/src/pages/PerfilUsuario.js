@@ -4,18 +4,52 @@ import '../styles/PerfilUsuario.css';
 function PerfilUsuario({ onLogout }) {
   const [usuario, setUsuario] = useState({
     nombre: "",
-    apellido: "",
     email: ""
   });
   const [editable, setEditable] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Cargar datos del localStorage (o hacer fetch al backend)
-    const nombreUsuario = localStorage.getItem("nombreUsuario") || "";
-    const emailUsuario = localStorage.getItem("emailUsuario") || "";
-    setUsuario({ nombre: nombreUsuario, apellido: "", email: emailUsuario });
+useEffect(() => {
+    const fetchUsuario = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setError("No autorizado");
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch("http://localhost:4000/api/usuario", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          setError(data.error || "Error al obtener los datos del usuario");
+          setLoading(false);
+          return;
+        }
+
+        const data = await res.json();
+        // setUsuario con todos los campos disponibles
+        setUsuario({
+          nombre: data.usuario.nombreCompleto || "",
+          email: data.usuario.email || "",
+          dni: data.usuario.dni || "",
+          telefono: data.usuario.telefono || "",
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError("No se pudieron cargar los datos del usuario");
+        setLoading(false);
+      }
+    };
+
+    fetchUsuario();
   }, []);
 
   const handleChange = e => {
@@ -34,7 +68,7 @@ function PerfilUsuario({ onLogout }) {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ nombre: usuario.nombre, apellido: usuario.apellido })
+        body: JSON.stringify({ nombre: usuario.nombre})
       });
 
       setLoading(false);
@@ -95,7 +129,8 @@ function PerfilUsuario({ onLogout }) {
         <label>DNI:</label>
         <input
           type="dni"
-          name="dni" /*value={usuario.dni}*/
+          name="dni" 
+          value={usuario.dni ? usuario.dni : ""}
           onChange={handleChange}
         />
 
@@ -110,7 +145,9 @@ function PerfilUsuario({ onLogout }) {
         <label>Teléfono:</label>
         <input
           type="telefono"
-          name="telefono" /*value={usuario.telefono}*/
+          name="telefono" 
+          value={usuario.telefono ? usuario.telefono : ""}
+          onChange={handleChange}
         />
 
         <div className="perfil-buttons">

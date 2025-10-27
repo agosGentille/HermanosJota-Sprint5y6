@@ -39,16 +39,16 @@ exports.login = async (req, res) => {
 
 // REGISTRO
 exports.register = async (req, res) => {
-  const { nombreCompleto, email, clave, rol } = req.body;
+  const { nombre, email, password, rol } = req.body;
 
   try {
     const existe = await User.findOne({ email });
     if (existe) return res.status(400).json({ error: "El usuario ya existe" });
 
-    const hashedPassword = await bcrypt.hash(clave, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const nuevoUsuario = new User({
-      nombreCompleto,
+      nombreCompleto: nombre,
       email,
       clave: hashedPassword,
       rol: rol || "visitante",
@@ -70,5 +70,16 @@ exports.register = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+exports.getUsuario = async (req, res) => {
+  try {
+    const usuario = await User.findById(req.user.id).select("-clave");
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+    res.json({ usuario });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener los datos del usuario" });
   }
 };

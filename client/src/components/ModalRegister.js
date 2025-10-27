@@ -58,11 +58,8 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
         }
 
         const data = await res.json();
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("nombreUsuario", data.usuario.nombre);
-        localStorage.setItem("emailUsuario", data.usuario.email);
 
-        onLogin({ nombre: data.usuario.nombre });
+       if (onShowLogin) onShowLogin();
         onClose();
       } catch (err) {
         setError("No se pudo conectar con el servidor");

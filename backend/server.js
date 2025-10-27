@@ -8,7 +8,7 @@ const path = require("path");
 const conectarDB = require("./database.js");
 conectarDB();
 
-const authRoutes = require("./routes/authRoutes.js");
+const usersRoutes = require("./routes/usersRoutes.js");
 const productosRoutes = require("./routes/productos.js");
 const contactoRoutes = require("./routes/ContactRoutes.js");
 const carritoRoutes = require("./routes/carritoRoutes");
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 });
 
 //rutas
-app.use("/api", authRoutes);   
+app.use("/api", usersRoutes);   
 app.use('/api/productos', productosRoutes);
 app.use("/api/contacto", contactoRoutes);
 app.use("/api/carrito", carritoRoutes);
