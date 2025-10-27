@@ -1,0 +1,131 @@
+import React, { useState, useEffect } from "react";
+import '../styles/PerfilUsuario.css';
+
+function PerfilUsuario({ onLogout }) {
+  const [usuario, setUsuario] = useState({
+    nombre: "",
+    apellido: "",
+    email: ""
+  });
+  const [editable, setEditable] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    // Cargar datos del localStorage (o hacer fetch al backend)
+    const nombreUsuario = localStorage.getItem("nombreUsuario") || "";
+    const emailUsuario = localStorage.getItem("emailUsuario") || "";
+    setUsuario({ nombre: nombreUsuario, apellido: "", email: emailUsuario });
+  }, []);
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setUsuario(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleActualizar = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:4000/api/usuario", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ nombre: usuario.nombre, apellido: usuario.apellido })
+      });
+
+      setLoading(false);
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Error al actualizar los datos");
+        return;
+      }
+
+      alert("Datos actualizados correctamente");
+      setEditable(false);
+    } catch (err) {
+      setError("No se pudo conectar con el servidor");
+      setLoading(false);
+    }
+  };
+
+  const handleEliminarCuenta = async () => {
+    if (!window.confirm("¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer.")) return;
+    
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:4000/api/usuario", {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Error al eliminar la cuenta");
+        return;
+      }
+      alert("Cuenta eliminada correctamente");
+      localStorage.clear();
+      onLogout();
+    } catch (err) {
+      setError("No se pudo conectar con el servidor");
+    }
+  };
+
+  return (
+    <div className="perfil-container">
+      <h2>Mi Perfil</h2>
+      {error && <p className="errorLogin active">* {error}</p>}
+
+      <div className="perfil-form">
+        <label>Nombre y Apellido:</label>
+        <input
+          type="text"
+          name="nombre"
+          value={usuario.nombre}
+          onChange={handleChange}
+        />
+
+        <label>DNI:</label>
+        <input
+          type="dni"
+          name="dni" /*value={usuario.dni}*/
+          onChange={handleChange}
+        />
+
+        <label>Email:</label>
+        <input
+          type="email"
+          name="email"
+          value={usuario.email}
+          disabled
+        />
+
+        <label>Teléfono:</label>
+        <input
+          type="telefono"
+          name="telefono" /*value={usuario.telefono}*/
+        />
+
+        <div className="perfil-buttons">
+          {editable ? (
+            <button onClick={handleActualizar} disabled={loading}>
+              {loading ? "Actualizando..." : "Guardar cambios"}
+            </button>
+          ) : (
+            <button onClick={() => setEditable(true)}>Actualizar datos</button>
+          )}
+          <button onClick={handleEliminarCuenta} className="delete-btn">Eliminar cuenta</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default PerfilUsuario;

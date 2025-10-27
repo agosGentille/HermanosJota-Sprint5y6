@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useLocation  } from 'react-router-dom';
 import ModalLogin from './ModalLogin';
 import ModalRegister from './ModalRegister';
 import '../styles/HeaderFooter.css';
@@ -13,6 +13,11 @@ function Header({ toggleCarrito, carrito }) {
   const [usuario, setUsuario] = useState({ nombre: null, email: null });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showRegister, setShowRegister] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const userMenuRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Detectar cambios de tamaño de pantalla
   useEffect(() => {
@@ -39,6 +44,10 @@ function Header({ toggleCarrito, carrito }) {
       localStorage.removeItem("nombreUsuario");
       localStorage.removeItem("emailUsuario");
       setUsuario({ nombre: null, email: null });
+      setShowUserMenu(false);
+      if (location.pathname === "/profile") {
+        navigate("/");
+      }
     }
   };
 
@@ -74,13 +83,33 @@ function Header({ toggleCarrito, carrito }) {
 
       <div className="header-right">
         {/* Icono usuario */}
-        <span
-          className={`material-symbols-outlined header-usuario ${usuario.nombre ? "logueado" : ""}`}
-          onClick={() => (usuario.nombre ? handleLogout() : setShowLogin(true))}
-          title={usuario.nombre ? "Cerrar sesión" : "Iniciar sesión"}
-        >
-          account_circle
-        </span>
+        <div className="user-container" ref={userMenuRef}>
+          <span
+            className={`material-symbols-outlined header-usuario ${usuario.nombre ? "logueado" : ""}`}
+            onClick={() => {
+              if (usuario.nombre) {
+                setShowUserMenu(prev => !prev); // toggle menú
+              } else {
+                setShowLogin(true);
+              }
+            }}
+            title={usuario.nombre ? "Usuario" : "Iniciar sesión"}
+          >
+            account_circle
+          </span>
+
+          {/* Menú desplegable para cerrar sesion o ver perfil */}
+          {usuario.nombre && showUserMenu && (
+            <div className={`user-dropdown ${showUserMenu ? "show" : ""}`}>
+              <button onClick={() => { navigate("/profile"); setShowUserMenu(false); }}>
+                Mi perfil
+              </button>
+              <button onClick={handleLogout} className="logout-btn">
+                Cerrar sesión
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Modales */}
         <ModalLogin 
