@@ -86,7 +86,7 @@ body {
   
 }
 .slide-info a:hover {
-  background-color: rgba(245, 230, 211, 0.8); /* Rosa Polvoriento transparente */
+  background-color: rgba(245, 230, 211, 0.8); 
   border: 2.5px solid #D4A437;
   color: #FFFFFF;
   box-shadow: 0 4px 10px rgba(212, 164, 55, 0.4);
@@ -132,7 +132,6 @@ body {
   border-radius: 20px;
 }
 
-/* Estilo de cada indicador */
 .indicador {
   width: 12px;
   height: 12px;

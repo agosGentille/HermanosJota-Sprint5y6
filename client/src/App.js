@@ -9,6 +9,7 @@ Importar piezas de React Router:
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import PerfilUsuario from './pages/PerfilUsuario';
 import ProductDetail from './components/ProductDetail';
 import Contacto from './pages/Contacto';
 import Carrito from './pages/Carrito';
@@ -55,6 +56,11 @@ function App() {
     restarCantidad: (id) => restarCantidad(carrito, setCarrito, id),
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = '/';
+  };
+
   return (
     <Router>
       {/*Es el "provider" del router. TODO lo que use rutas (Links, useParams, useNavigate, <Routes>...) 
@@ -87,6 +93,7 @@ function App() {
          donde el :id es un parámetro de ruta al cual se accede por useParams()*/}
          {/*element: Es el componente React que se renderiza cuando la URL coincide con 
          el path, puede incluir props */}
+         <Route path="/profile" element={<PerfilUsuario onLogout={handleLogout} />} />
       </Routes>
       <Footer />
     </Router>

@@ -134,6 +134,68 @@
     color: rgba(212, 164, 55, 0.5);
     font-size: 1.25rem;
 }
+
+.user-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Menú desplegable */
+.user-dropdown {
+  position: absolute;
+  top: 40px; /* ajusta según el tamaño del icono */
+  right: 0;
+  background-color: #fff; /* color de fondo */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+  overflow: hidden;
+  width: 160px; /* ancho del dropdown */
+  
+  /* Para animación de slide */
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+/* Cuando el dropdown está visible */
+.user-container .user-dropdown.show {
+  max-height: 500px; /* suficientemente grande para contener todo */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Elementos dentro del dropdown */
+.user-dropdown p.user-nombre {
+  margin: 10px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.user-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.user-dropdown button:hover {
+  background-color: #f0f0f0;
+}
+
+.user-dropdown .logout-btn {
+  color: #d9534f; 
+}
+
+
+
 /*
 --- CONFIGURACIÓN DEL FOOTER ---
 */
