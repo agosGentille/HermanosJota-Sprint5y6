@@ -14,12 +14,6 @@ const productosRoutes = require("./routes/productos");
 const contactoRoutes = require("./routes/ContactRoutes.js");
 const carritoRoutes = require("./routes/carritoRoutes");
 
-const DB_URI = "mongodb+srv://hermanosjota:hermanosjota@cluster0.xsxpb32.mongodb.net/catalogo?retryWrites=true&w=majority";
-
-mongoose.connect(DB_URI)
-    .then(() => console.log("Conexión exitosa a MongoDB"))
-    .catch(err => console.error("Error al conectar a MongoDB:", err));
-
 app.use(cors());
 app.use(express.json());
 
