@@ -5,94 +5,96 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true 
-    },
+  },
   titulo: { 
     type: String, 
     required: true 
-    },
+  },
   descripcion: { 
-    type: String
-     },
+    type: String 
+  },
   Precio: { 
-    type: Number,
-    required: true 
-    },
+    type: Number 
+  },
   categoria: { 
-    type: String
-    },
+    type: String 
+  },
   medidas: { 
-    type: String
-    },
+    type: String 
+  },
   materiales: { 
-    type: String
-    },
+    type: String 
+  },
   acabado: { 
-    type: String
-    },
+    type: String 
+  },
   peso: { 
-    type: String
-    },
+    type: String 
+  },
   capacidad: { 
-    type: String
-    },
+    type: String 
+  },
   tapizado: { 
-    type: String
-    },
+    type: String 
+  },
   confort: { 
-    type: String
-    },
+    type: String 
+  },
   almacenamiento: { 
-    type: String
-    },
+    type: String 
+  },
   cables: { 
-    type: String
-    },
+    type: String 
+  },
   extension: { 
-    type: String
-    },
+    type: String 
+  },
   carga_max: { 
-    type: String
-    },
+    type: String 
+  },
   caracteristicas: { 
-    type: String
-    },
+    type: String 
+  },
   regulacion: { 
-    type: String
-    },
+    type: String 
+  },
   certificacion: { 
-    type: String
-    },
+    type: String 
+  },
   apilables: { 
-    type: String
-    },
+    type: String 
+  },
   incluye: { 
-    type: String
-    },
-  rotacion:{ 
-    type: String
-    },
+    type: String 
+  },
+  rotacion: { 
+    type: String 
+  },
   garantia: { 
-    type: String
-    },
+    type: String 
+  },
   estructura: { 
-    type: String
-    },
+    type: String 
+  },
   sostenibilidad: { 
-    type: String
-    },
+    type: String 
+  },
   colchon: { 
-    type: String
-    },
+    type: String 
+  },
   masVendidos: { 
-    type: Boolean
-    },
+    type: Boolean 
+  },
+  stock: {
+    type: Number,
+    default: 0
+  },
   imagen: { 
-    type: String
-    },
+    type: String 
+  },
   imagenHover: { 
-    type: String, 
-    }
-
+    type: String 
+  }
 }, { timestamps: true });
 
 const Producto = mongoose.model("Products", productSchema);
