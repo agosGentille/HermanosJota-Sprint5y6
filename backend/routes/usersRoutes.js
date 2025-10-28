@@ -9,8 +9,8 @@ router.post("/register", UsersController.register);
 
 //perfil usuarios
 router.get("/usuario", verificarToken, UsersController.getUsuario);
-//router.put("/usuario", verificarToken, UsersController.actualizarUsuario);
-//router.delete("/usuario", verificarToken, UsersController.eliminarUsuario);
+router.put("/usuario", verificarToken, UsersController.actualizarUsuario);
+router.delete("/usuario", verificarToken, UsersController.eliminarUsuario);
 
 //rutas para admin - gestion de usuarios
 router.get("/users", UsersController.getAllUsers);
