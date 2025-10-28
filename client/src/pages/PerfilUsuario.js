@@ -67,35 +67,44 @@ useEffect(() => {
     setUsuario(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleActualizar = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/usuario", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ nombre: usuario.nombre})
-      });
+ const handleActualizar = async () => {
+  setLoading(true);
+  setError("");
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:4000/api/usuario", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        nombreCompleto: usuario.nombre,
+        dni: usuario.dni,
+        telefono: usuario.telefono,
+        direccionCalle: usuario.direccionCalle,
+        direccionLocalidad: usuario.direccionLocalidad,
+        direccionProvincia: usuario.direccionProvincia,
+        direccionPais: usuario.direccionPais
+      })
+    });
 
-      setLoading(false);
+    setLoading(false);
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Error al actualizar los datos");
-        return;
-      }
-
-      alert("Datos actualizados correctamente");
-      setEditable(false);
-    } catch (err) {
-      setError("No se pudo conectar con el servidor");
-      setLoading(false);
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || "Error al actualizar los datos");
+      return;
     }
-  };
+
+    alert("Datos actualizados correctamente");
+    setEditable(false);
+  } catch (err) {
+    setError("No se pudo conectar con el servidor");
+    setLoading(false);
+  }
+};
+
 
   const handleEliminarCuenta = async () => {
     if (!window.confirm("¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer.")) return;
