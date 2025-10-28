@@ -10,15 +10,9 @@ const conectarDB = require("./database.js");
 conectarDB();
 
 const usersRoutes = require("./routes/usersRoutes.js");
-const productosRoutes = require("./routes/productos");
+const productRoutes = require("./routes/productRoutes.js");
 const contactoRoutes = require("./routes/ContactRoutes.js");
 const carritoRoutes = require("./routes/carritoRoutes");
-
-const DB_URI = "mongodb+srv://hermanosjota:hermanosjota@cluster0.xsxpb32.mongodb.net/catalogo?retryWrites=true&w=majority";
-
-mongoose.connect(DB_URI)
-    .then(() => console.log("Conexión exitosa a MongoDB"))
-    .catch(err => console.error("Error al conectar a MongoDB:", err));
 
 app.use(cors());
 app.use(express.json());
@@ -30,8 +24,8 @@ app.use((req, res, next) => {
 });
 
 // Rutas
-app.use("/api", usersRoutes);   
-app.use('/api/productos', productosRoutes);
+app.use("/api", usersRoutes);
+app.use("/api/productos", productRoutes);
 app.use("/api/contacto", contactoRoutes);
 app.use("/api/carrito", carritoRoutes);
 
