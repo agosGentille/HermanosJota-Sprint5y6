@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 4000;
 
 const cors = require("cors");
 const path = require("path");
-const conectarDB = require("./database.js");
+const conectarDB = require("./config/db.js");
 conectarDB();
 
 const usersRoutes = require("./routes/usersRoutes.js");
