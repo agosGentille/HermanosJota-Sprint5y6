@@ -85,6 +85,42 @@ exports.getUsuario = async (req, res) => {
   }
 };
 
+exports.actualizarUsuario = async (req, res) => {
+  try {
+    const updates = { ...req.body };
+
+    if (updates.clave && updates.clave.trim() !== "") {
+      updates.clave = await bcrypt.hash(updates.clave, 10);
+    } else {
+      delete updates.clave;
+    }
+
+    delete updates.email;
+
+    const usuario = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-clave");
+
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    res.json({ usuario });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar usuario" });
+  }
+};
+
+exports.eliminarUsuario = async (req, res) => {
+  try {
+    const usuario = await User.findByIdAndDelete(req.user.id);
+
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    res.json({ mensaje: "Usuario eliminado exitosamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al eliminar usuario" });
+  }
+};
+
 // obtener todos los usuarios (solo admin)
 exports.getAllUsers = async (req, res) => {
   try {
