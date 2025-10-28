@@ -1,0 +1,78 @@
+/* ====== ESTRUCTURA GENERAL ====== */
+.admin-page {
+  display: flex;
+  flex-direction: column;
+  /* min-height: 100vh; */
+  font-family: "Inter", sans-serif;
+  color: #222;
+  margin-top: clamp(100px, 10vh, 150px);
+}
+
+/* ====== HEADER ====== */
+.admin-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem 1.5rem;
+}
+
+.admin-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* ====== NAV ====== */
+.admin-nav {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.admin-nav button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #e9ecef;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 160px;
+}
+
+.admin-nav button:hover {
+  background-color: #dee2e6;
+  transform: translateY(-1px);
+}
+
+.admin-nav button.active {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ====== MAIN ====== */
+.admin-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Contenedor del contenido (usuarios o productos) */
+.admin-section {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+}

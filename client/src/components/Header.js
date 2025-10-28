@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation  } from 'react-router-dom';
-import ModalLogin from './ModalLogin';
-import ModalRegister from './ModalRegister';
-import '../styles/HeaderFooter.css';
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import ModalLogin from "./ModalLogin";
+import ModalRegister from "./ModalRegister";
+import "../styles/HeaderFooter.css";
 /*Imports de Imágenes*/
-import logo from '../images/logo.svg';
-import menu from '../images/iconoMenu.png';
+import logo from "../images/logo.svg";
+import menu from "../images/iconoMenu.png";
 
 function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
   const [showLogin, setShowLogin] = useState(false);
@@ -21,8 +21,8 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
   // Detectar cambios de tamaño de pantalla
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleLogoutClick = () => {
@@ -46,26 +46,32 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
   }, [carrito]);
 
   return (
-    <header className='header-sticky'>
+    <header className="header-sticky">
       <div className="header-marca">
         <img src={logo} alt="Logo Hermanos Jota" id="logo" />
         <p>Hermanos Jota</p>
       </div>
 
-      <nav className={`header-nav ${isMobile && menuOpen ? 'open' : ''}`}>
+      <nav className={`header-nav ${isMobile && menuOpen ? "open" : ""}`}>
         {isMobile && (
           <span className="close" onClick={() => setMenuOpen(false)}>
             &times;
           </span>
         )}
         <ul>
-          <li><Link to="/">INICIO</Link></li>
-          <li><Link to="/productos">PRODUCTOS</Link></li>
-          <li><Link to="/contacto">CONTACTO</Link></li>
+          <li>
+            <Link to="/">INICIO</Link>
+          </li>
+          <li>
+            <Link to="/productos">PRODUCTOS</Link>
+          </li>
+          <li>
+            <Link to="/contacto">CONTACTO</Link>
+          </li>
           {/* Solo mostrar Administrar si es admin */}
           {esAdmin && (
             <li>
-              <Link to="/admin/crear-producto" className="admin-link">
+              <Link to="/admin" className="admin-link">
                 ADMINISTRAR
               </Link>
             </li>
@@ -77,10 +83,12 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
         {/* Icono usuario */}
         <div className="user-container" ref={userMenuRef}>
           <span
-            className={`material-symbols-outlined header-usuario ${usuario ? "logueado" : ""}`}
+            className={`material-symbols-outlined header-usuario ${
+              usuario ? "logueado" : ""
+            }`}
             onClick={() => {
               if (usuario) {
-                setShowUserMenu(prev => !prev);
+                setShowUserMenu((prev) => !prev);
               } else {
                 setShowLogin(true);
               }
@@ -93,7 +101,12 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
           {/* Menú desplegable para cerrar sesion o ver perfil */}
           {usuario && showUserMenu && (
             <div className={`user-dropdown ${showUserMenu ? "show" : ""}`}>
-              <button onClick={() => { navigate("/profile"); setShowUserMenu(false); }}>
+              <button
+                onClick={() => {
+                  navigate("/profile");
+                  setShowUserMenu(false);
+                }}
+              >
                 Mi perfil
               </button>
               <button onClick={handleLogoutClick} className="logout-btn">
@@ -104,33 +117,38 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
         </div>
 
         {/* Modales */}
-        <ModalLogin 
-          show={showLogin} 
-          onClose={() => setShowLogin(false)} 
+        <ModalLogin
+          show={showLogin}
+          onClose={() => setShowLogin(false)}
           onLogin={(userData) => {
             // Esta función se llamará cuando el login sea exitoso
             // El estado de usuario se manejará en App.js a través de localStorage
             setShowLogin(false);
-          }} 
-          onShowRegister={() => setShowRegister(true)} 
+          }}
+          onShowRegister={() => setShowRegister(true)}
         />
-        <ModalRegister 
-          show={showRegister} 
-          onClose={() => setShowRegister(false)} 
+        <ModalRegister
+          show={showRegister}
+          onClose={() => setShowRegister(false)}
           onLogin={(userData) => {
             // Esta función se llamará cuando el registro sea exitoso
             // El estado de usuario se manejará en App.js a través de localStorage
             setShowRegister(false);
-          }} 
-          onShowLogin={() => setShowLogin(true)} 
+          }}
+          onShowLogin={() => setShowLogin(true)}
         />
 
         {/* Carrito */}
         <div className="header-carrito-container" onClick={toggleCarrito}>
-          <span className="header-carrito material-symbols-outlined" title="Carrito">
+          <span
+            className="header-carrito material-symbols-outlined"
+            title="Carrito"
+          >
             shopping_bag
           </span>
-          <span className={`numerito ${bounce ? 'bounce' : ''}`}>{carrito.length}</span>
+          <span className={`numerito ${bounce ? "bounce" : ""}`}>
+            {carrito.length}
+          </span>
         </div>
 
         {/* Menú hamburguesa para móvil */}
