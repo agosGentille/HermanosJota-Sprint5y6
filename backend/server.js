@@ -10,7 +10,7 @@ const conectarDB = require("./config/db.js");
 conectarDB();
 
 const usersRoutes = require("./routes/usersRoutes.js");
-const productosRoutes = require("./routes/productos");
+const productRoutes = require("./routes/productRoutes.js");
 const contactoRoutes = require("./routes/ContactRoutes.js");
 const carritoRoutes = require("./routes/carritoRoutes");
 
@@ -24,8 +24,8 @@ app.use((req, res, next) => {
 });
 
 // Rutas
-app.use("/api", usersRoutes);   
-app.use('/api/productos', productosRoutes);
+app.use("/api", usersRoutes);
+app.use("/api/productos", productRoutes);
 app.use("/api/contacto", contactoRoutes);
 app.use("/api/carrito", carritoRoutes);
 

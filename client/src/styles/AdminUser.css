@@ -1,0 +1,135 @@
+.admin-users-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.admin-users-container h2 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.admin-users-container > p {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 1px dashed #ced4da;
+  color: #6c757d;
+  text-align: center;
+  font-style: italic;
+}
+
+.admin-users-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-user-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-user-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 30px;
+  flex-grow: 1;
+}
+
+.user-info strong {
+  color: #495057;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.user-info div {
+  font-size: 14px;
+  color: #343a40;
+}
+
+.user-info div:nth-child(5) {
+  font-weight: 700;
+  color: #007bff;
+}
+
+.user-actions {
+  display: flex;
+  gap: 10px;
+  margin-left: 20px;
+}
+
+.user-actions button {
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.user-actions button:first-child {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.user-actions button:first-child:hover {
+  background: #0056b3;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+}
+
+.user-actions button:last-child {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.user-actions button:last-child:hover {
+  background: #c82333;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .admin-user-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .user-info {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .user-actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+
+  .user-actions button {
+    flex: 1;
+  }
+}

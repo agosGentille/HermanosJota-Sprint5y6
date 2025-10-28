@@ -1,42 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import '../styles/AdminProductForm.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import "../styles/AdminForm.css";
 
 const AdminProductForm = ({ editMode = false }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [producto, setProducto] = useState({
-    id: '',
-    titulo: '',
-    descripcion: '',
-    Precio: '',
-    categoria: '',
-    medidas: '',
-    materiales: '',
-    acabado: '',
-    peso: '',
-    capacidad: '',
-    tapizado: '',
-    confort: '',
-    almacenamiento: '',
-    cables: '',
-    extension: '',
-    carga_max: '',
-    caracteristicas: '',
-    regulacion: '',
-    certificacion: '',
-    apilables: '',
-    incluye: '',
-    rotacion: '',
-    garantia: '',
-    estructura: '',
-    sostenibilidad: '',
-    colchon: '',
+    id: "",
+    titulo: "",
+    descripcion: "",
+    Precio: "",
+    categoria: "",
+    medidas: "",
+    materiales: "",
+    acabado: "",
+    peso: "",
+    capacidad: "",
+    tapizado: "",
+    confort: "",
+    almacenamiento: "",
+    cables: "",
+    extension: "",
+    carga_max: "",
+    caracteristicas: "",
+    regulacion: "",
+    certificacion: "",
+    apilables: "",
+    incluye: "",
+    rotacion: "",
+    garantia: "",
+    estructura: "",
+    sostenibilidad: "",
+    colchon: "",
     masVendidos: false,
     stock: 0, // ✅ CAMPO STOCK AGREGADO
-    imagen: '',
-    imagenHover: ''
+    imagen: "",
+    imagenHover: "",
   });
 
   // Cargar producto si está en modo edición
@@ -44,13 +44,15 @@ const AdminProductForm = ({ editMode = false }) => {
     if (editMode && id) {
       const fetchProducto = async () => {
         try {
-          const response = await fetch(`http://localhost:4000/api/productos/${id}`);
-          if (!response.ok) throw new Error('Error cargando producto');
+          const response = await fetch(
+            `http://localhost:4000/api/productos/${id}`
+          );
+          if (!response.ok) throw new Error("Error cargando producto");
           const data = await response.json();
           setProducto(data);
         } catch (error) {
-          console.error('Error:', error);
-          alert('Error al cargar el producto');
+          console.error("Error:", error);
+          alert("Error al cargar el producto");
         }
       };
       fetchProducto();
@@ -59,9 +61,9 @@ const AdminProductForm = ({ editMode = false }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setProducto(prev => ({
+    setProducto((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -70,29 +72,29 @@ const AdminProductForm = ({ editMode = false }) => {
     setLoading(true);
 
     try {
-      const url = editMode 
+      const url = editMode
         ? `http://localhost:4000/api/productos/${id}`
-        : 'http://localhost:4000/api/productos';
-      
-      const method = editMode ? 'PUT' : 'POST';
+        : "http://localhost:4000/api/productos";
+
+      const method = editMode ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method: method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(producto)
+        body: JSON.stringify(producto),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al guardar el producto');
+        throw new Error(errorData.error || "Error al guardar el producto");
       }
 
       // Redirigir después de guardar
-      navigate('/productos');
+      navigate("/productos");
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       alert(error.message);
     } finally {
       setLoading(false);
@@ -102,20 +104,17 @@ const AdminProductForm = ({ editMode = false }) => {
   return (
     <div className="admin-form-container">
       <div className="admin-form-header">
-        <h2>{editMode ? 'Editar Producto' : 'Crear Nuevo Producto'}</h2>
-        <button 
-          className="btn-volver"
-          onClick={() => navigate('/productos')}
-        >
-          ← Volver al Catálogo
+        <h2>{editMode ? "Editar Producto" : "Crear Nuevo Producto"}</h2>
+        <button className="btn-volver" onClick={() => navigate("/productos")}>
+          ← Ver Catálogo
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="admin-product-form">
+      <form onSubmit={handleSubmit}>
         {/* Sección: Información Básica */}
         <div className="form-section">
           <h3>Información Básica</h3>
-          
+
           <div className="form-group">
             <label>ID * (Identificador único)</label>
             <input
@@ -478,17 +477,17 @@ const AdminProductForm = ({ editMode = false }) => {
 
         {/* Botones de acción */}
         <div className="form-actions">
-          <button 
-            type="submit" 
-            className="btn-guardar"
-            disabled={loading}
-          >
-            {loading ? 'Guardando...' : (editMode ? 'Actualizar Producto' : 'Crear Producto')}
+          <button type="submit" className="btn-guardar" disabled={loading}>
+            {loading
+              ? "Guardando..."
+              : editMode
+              ? "Actualizar Producto"
+              : "Crear Producto"}
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn-cancelar"
-            onClick={() => navigate('/productos')}
+            onClick={() => navigate("/productos")}
           >
             Cancelar
           </button>

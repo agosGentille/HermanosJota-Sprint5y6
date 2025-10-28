@@ -76,10 +76,23 @@ exports.register = async (req, res) => {
 exports.getUsuario = async (req, res) => {
   try {
     const usuario = await User.findById(req.user.id).select("-clave");
-    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+    if (!usuario)
+      return res.status(404).json({ error: "Usuario no encontrado" });
     res.json({ usuario });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener los datos del usuario" });
+  }
+};
+
+// obtener todos los usuarios (solo admin)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const usuarios = await User.find().select("-clave");
+    res.status(200).json(usuarios);
+    console.log("Usuarios enviados: ", usuarios);
+  } catch (error) {
+    console.error("Error en /api/usuarios: ", error);
+    res.status(500).json({ error: "Error al obtener los usuarios" });
   }
 };
