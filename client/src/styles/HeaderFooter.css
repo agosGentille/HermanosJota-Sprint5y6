@@ -140,6 +140,29 @@
   display: inline-block;
 }
 
+.btn-admin {
+  background: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+.btn-admin:hover {
+  background: #218838;
+}
+
+.admin-link {
+  color: #ff6b6b !important;
+  font-weight: bold;
+}
+
+.admin-link:hover {
+  color: #ff5252 !important;
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
 /* Menú desplegable */
 .user-dropdown {
   position: absolute;
