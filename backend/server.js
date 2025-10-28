@@ -10,29 +10,26 @@ const conectarDB = require("./database.js");
 conectarDB();
 
 const usersRoutes = require("./routes/usersRoutes.js");
-const productosRoutes = require("./routes/productos.js");
+const productosRoutes = require("./routes/productos");
 const contactoRoutes = require("./routes/ContactRoutes.js");
 const carritoRoutes = require("./routes/carritoRoutes");
 
 const DB_URI = "mongodb+srv://hermanosjota:hermanosjota@cluster0.xsxpb32.mongodb.net/catalogo?retryWrites=true&w=majority";
 
-
 mongoose.connect(DB_URI)
     .then(() => console.log("Conexión exitosa a MongoDB"))
     .catch(err => console.error("Error al conectar a MongoDB:", err));
 
+app.use(cors());
+app.use(express.json());
 
-app.use(cors()); // permite leer JSON en req.body
-app.use(express.json()); //parsea JSON para que no llegue undefined
-
-
-//Middleware global que muestre método y url de la petición (Punto 4 consigna final)
+// Middleware global que muestre método y url de la petición
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
 });
 
-//rutas
+// Rutas
 app.use("/api", usersRoutes);   
 app.use('/api/productos', productosRoutes);
 app.use("/api/contacto", contactoRoutes);
@@ -49,6 +46,7 @@ app.get("/", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ error: `Ruta: ${req.originalUrl} - no encontrada` });
 });
+
 // 500
 app.use((err, req, res, next) => {
   console.error(err.stack);

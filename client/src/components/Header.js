@@ -7,10 +7,9 @@ import '../styles/HeaderFooter.css';
 import logo from '../images/logo.svg';
 import menu from '../images/iconoMenu.png';
 
-function Header({ toggleCarrito, carrito }) {
+function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
   const [showLogin, setShowLogin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [usuario, setUsuario] = useState({ nombre: null, email: null });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showRegister, setShowRegister] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -26,24 +25,9 @@ function Header({ toggleCarrito, carrito }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Cargar usuario guardado
-  useEffect(() => {
-    const nombreGuardado = localStorage.getItem("nombreUsuario");
-    const emailGuardado = localStorage.getItem("emailUsuario");
-    if (nombreGuardado || emailGuardado) {
-      setUsuario({ nombre: nombreGuardado, email: emailGuardado });
-    }
-  }, []);
-
-  const handleLogin = ({ nombre, email }) => {
-    setUsuario({ nombre, email });
-  };
-
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
     if (window.confirm("¿Desea cerrar sesión?")) {
-      localStorage.removeItem("nombreUsuario");
-      localStorage.removeItem("emailUsuario");
-      setUsuario({ nombre: null, email: null });
+      onLogout();
       setShowUserMenu(false);
       if (location.pathname === "/profile") {
         navigate("/");
@@ -56,7 +40,7 @@ function Header({ toggleCarrito, carrito }) {
   useEffect(() => {
     if (carrito.length > 0) {
       setBounce(true);
-      const timeout = setTimeout(() => setBounce(false), 300); // dura 0.3s
+      const timeout = setTimeout(() => setBounce(false), 300);
       return () => clearTimeout(timeout);
     }
   }, [carrito]);
@@ -78,6 +62,14 @@ function Header({ toggleCarrito, carrito }) {
           <li><Link to="/">INICIO</Link></li>
           <li><Link to="/productos">PRODUCTOS</Link></li>
           <li><Link to="/contacto">CONTACTO</Link></li>
+          {/* Solo mostrar Administrar si es admin */}
+          {esAdmin && (
+            <li>
+              <Link to="/admin/crear-producto" className="admin-link">
+                ADMINISTRAR
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
 
@@ -85,26 +77,26 @@ function Header({ toggleCarrito, carrito }) {
         {/* Icono usuario */}
         <div className="user-container" ref={userMenuRef}>
           <span
-            className={`material-symbols-outlined header-usuario ${usuario.nombre ? "logueado" : ""}`}
+            className={`material-symbols-outlined header-usuario ${usuario ? "logueado" : ""}`}
             onClick={() => {
-              if (usuario.nombre) {
-                setShowUserMenu(prev => !prev); // toggle menú
+              if (usuario) {
+                setShowUserMenu(prev => !prev);
               } else {
                 setShowLogin(true);
               }
             }}
-            title={usuario.nombre ? "Usuario" : "Iniciar sesión"}
+            title={usuario ? "Usuario" : "Iniciar sesión"}
           >
             account_circle
           </span>
 
           {/* Menú desplegable para cerrar sesion o ver perfil */}
-          {usuario.nombre && showUserMenu && (
+          {usuario && showUserMenu && (
             <div className={`user-dropdown ${showUserMenu ? "show" : ""}`}>
               <button onClick={() => { navigate("/profile"); setShowUserMenu(false); }}>
                 Mi perfil
               </button>
-              <button onClick={handleLogout} className="logout-btn">
+              <button onClick={handleLogoutClick} className="logout-btn">
                 Cerrar sesión
               </button>
             </div>
@@ -115,13 +107,21 @@ function Header({ toggleCarrito, carrito }) {
         <ModalLogin 
           show={showLogin} 
           onClose={() => setShowLogin(false)} 
-          onLogin={handleLogin} 
+          onLogin={(userData) => {
+            // Esta función se llamará cuando el login sea exitoso
+            // El estado de usuario se manejará en App.js a través de localStorage
+            setShowLogin(false);
+          }} 
           onShowRegister={() => setShowRegister(true)} 
         />
         <ModalRegister 
           show={showRegister} 
           onClose={() => setShowRegister(false)} 
-          onLogin={handleLogin} 
+          onLogin={(userData) => {
+            // Esta función se llamará cuando el registro sea exitoso
+            // El estado de usuario se manejará en App.js a través de localStorage
+            setShowRegister(false);
+          }} 
           onShowLogin={() => setShowLogin(true)} 
         />
 
