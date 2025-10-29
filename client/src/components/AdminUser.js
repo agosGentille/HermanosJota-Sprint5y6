@@ -26,26 +26,39 @@ const AdminUser = () => {
     fetchUsers();
   }, []);
 
-  const handleEdit = (userId) => {
-    // Ajusta la ruta según tu routing en la app
-    navigate(`/usuarios/${userId}/editar`);
-  };
-
-  const handleDelete = async (userId) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
-
+  const handleDelete = (userId) => {
+    if (!window.confirm("¿Eliminar usuario?")) return;
     try {
-      const res = await fetch(`http://localhost:4000/api/users/${userId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Error al eliminar usuario");
-      // refrescar la lista después de eliminar
-      await fetchUsers();
+      console.log("Eliminando usuario con ID:", userId);
     } catch (err) {
       console.error(err);
-      alert(err.message || "Error al eliminar usuario");
+      alert("No se pudo eliminar el usuario");
     }
-  };
+  }
+
+const handleToggleRole = async (user) => {
+  const rol = (user.rol || "").toString().toLowerCase();
+  const isAdmin = rol === "admin";
+  const confirmMsg = isAdmin
+    ? "¿Seguro que querés convertir este admin en visitante?"
+    : "¿Seguro que querés convertir este visitante en admin?";
+  if (!window.confirm(confirmMsg)) return;
+
+  const newRole = isAdmin ? "visitante" : "admin";
+  try {
+    // const res = await fetch(`http://localhost:4000/api/users/${user.id}/role`, {
+    //   method: "PUT",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ rol: newRole }),
+    // });
+    console.log(`Cambiando rol del usuario ${user._id || user.id || user.dni} a ${newRole}`);
+    // if (!res.ok) throw new Error("Error actualizando rol");
+    await fetchUsers();
+  } catch (err) {
+    console.error(err);
+    alert("No se pudo cambiar el rol");
+  }
+};
 
   return (
     <div className="admin-users-container">
@@ -59,6 +72,10 @@ const AdminUser = () => {
         <ul className="admin-users-list">
           {users.map((u) => {
             const id = u._id || u.id || u.dni;
+            const rol = (u.rol || "").toString().toLowerCase();
+            const isAdmin = rol === "admin";
+            const toggleLabel = isAdmin ? "Convertir a visitante" : "Convertir a admin";
+
             return (
               <li key={id} className="admin-user-row">
                 <div className="user-info">
@@ -81,7 +98,7 @@ const AdminUser = () => {
                 </div>
 
                 <div className="user-actions">
-                  <button onClick={() => handleEdit(id)}>Modificar</button>
+                  <button onClick={() => handleToggleRole(u)}>{toggleLabel}</button>
                   <button onClick={() => handleDelete(id)}>Eliminar</button>
                 </div>
               </li>

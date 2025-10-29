@@ -12,17 +12,17 @@ function AdminPage() {
       <header className="admin-header">
         <h1>Panel de Administrador</h1>
         <nav className="admin-nav">
-          <button
+          {/* <button
             className={section === "create-user" ? "active" : ""}
             onClick={() => setSection("create-user")}
           >
             Crear usuarios
-          </button>
+          </button> */}
           <button
             className={section === "users" ? "active" : ""}
             onClick={() => setSection("users")}
           >
-            Visualizar usuarios
+            Gestionar usuarios
           </button>
           <button
             className={section === "products" ? "active" : ""}
