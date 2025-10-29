@@ -15,4 +15,10 @@ router.delete("/usuario", verificarToken, UsersController.eliminarUsuario);
 //rutas para admin - gestion de usuarios
 router.get("/users", UsersController.getAllUsers);
 
+router.get("/users/:id", UsersController.getUsuario);
+
+router.put("/users/role/:id", UsersController.updateUserRole);
+
+router.delete("/users/:id", UsersController.deleteUser);
+
 module.exports = router;
