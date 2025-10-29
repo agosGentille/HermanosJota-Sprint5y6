@@ -29,7 +29,7 @@ const AdminUser = () => {
     fetchUsers();
   }, []);
 
-  const handleDelete = (userId) => {
+  const handleDelete = async (userId) => {
     console.log("Email del admin:", adminEmail);
     if (adminEmail !== "admin@muebleriajota.com") {
       alert("Solo el admin principal puede eliminar usuarios");
@@ -39,6 +39,12 @@ const AdminUser = () => {
     if (!window.confirm("¿Eliminar usuario?")) return;
     try {
       console.log("Eliminando usuario con ID:", userId);
+      const res = await fetch(`http://localhost:4000/api/users/${userId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!res.ok) throw new Error("Error eliminando usuario");
+      await fetchUsers();
     } catch (err) {
       console.error(err);
       alert("No se pudo eliminar el usuario");

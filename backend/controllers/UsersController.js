@@ -122,3 +122,20 @@ exports.updateUserRole = async (req, res) => {
     res.status(500).json({ error: "Error al actualizar el rol" });
   }
 };
+
+// eliminar usuario (solo admin)
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const usuario = await User.findById(id);
+    if (!usuario)
+      return res.status(404).json({ error: "Usuario no encontrado" });
+
+    await User.findByIdAndDelete(id);
+    res.json({ message: "Usuario eliminado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al eliminar el usuario" });
+  }
+};
