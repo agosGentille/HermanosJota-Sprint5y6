@@ -15,4 +15,8 @@ router.get("/usuario", verificarToken, UsersController.getUsuario);
 //rutas para admin - gestion de usuarios
 router.get("/users", UsersController.getAllUsers);
 
+router.get("/users/:id", UsersController.getUsuario);
+
+router.put("/users/role/:id", UsersController.updateUserRole);
+
 module.exports = router;

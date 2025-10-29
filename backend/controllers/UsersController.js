@@ -75,7 +75,8 @@ exports.register = async (req, res) => {
 
 exports.getUsuario = async (req, res) => {
   try {
-    const usuario = await User.findById(req.user.id).select("-clave");
+    const usuario = await User.findById(req.params.id);
+    console.log("Usuario encontrado: ", usuario);
     if (!usuario)
       return res.status(404).json({ error: "Usuario no encontrado" });
     res.json({ usuario });
@@ -94,5 +95,30 @@ exports.getAllUsers = async (req, res) => {
   } catch (error) {
     console.error("Error en /api/usuarios: ", error);
     res.status(500).json({ error: "Error al obtener los usuarios" });
+  }
+};
+
+// actualizar rol de usuario (solo admin)
+exports.updateUserRole = async (req, res) => {
+  const { id } = req.params;
+  // const { rol } = req.body;
+
+  try {
+    const usuario = await User.findById(id);
+    if (!usuario)
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    
+    const userRol = (usuario.rol || "").toString().toLowerCase();
+    if (userRol === "admin") {
+      usuario.rol = "visitante";
+    } else {
+      usuario.rol = "admin";
+    }
+
+    await usuario.save();
+    res.json({ message: "Rol actualizado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar el rol" });
   }
 };

@@ -7,6 +7,9 @@ const AdminUser = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
 
+  // traigo el email del admin desde el localStorage
+  const adminEmail = localStorage.getItem("emailUsuario");
+
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -27,6 +30,12 @@ const AdminUser = () => {
   }, []);
 
   const handleDelete = (userId) => {
+    console.log("Email del admin:", adminEmail);
+    if (adminEmail !== "admin@muebleriajota.com") {
+      alert("Solo el admin principal puede eliminar usuarios");
+      return;
+    }
+
     if (!window.confirm("¿Eliminar usuario?")) return;
     try {
       console.log("Eliminando usuario con ID:", userId);
@@ -37,22 +46,32 @@ const AdminUser = () => {
   }
 
 const handleToggleRole = async (user) => {
+  console.log("Email del admin:", adminEmail);
+  if (adminEmail !== "admin@muebleriajota.com") {
+    alert("Solo el admin principal puede cambiar roles");
+    return;
+  }
+  
+  if (user.email === adminEmail) {
+    alert("No puedes cambiar tu propio rol");
+    return;
+  }
+
   const rol = (user.rol || "").toString().toLowerCase();
   const isAdmin = rol === "admin";
+  const userName = user.nombreCompleto;
   const confirmMsg = isAdmin
-    ? "¿Seguro que querés convertir este admin en visitante?"
-    : "¿Seguro que querés convertir este visitante en admin?";
+    ? `¿Seguro que quieres convertir a ${userName} en visitante?`
+    : `¿Seguro que quieres convertir a ${userName} en admin?`;
   if (!window.confirm(confirmMsg)) return;
 
-  const newRole = isAdmin ? "visitante" : "admin";
   try {
-    // const res = await fetch(`http://localhost:4000/api/users/${user.id}/role`, {
-    //   method: "PUT",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ rol: newRole }),
-    // });
-    console.log(`Cambiando rol del usuario ${user._id || user.id || user.dni} a ${newRole}`);
-    // if (!res.ok) throw new Error("Error actualizando rol");
+    const res = await fetch(`http://localhost:4000/api/users/role/${user._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" }
+    });
+    console.log(`Cambiando rol del usuario ${user._id}`);
+    if (!res.ok) throw new Error("Error actualizando rol");
     await fetchUsers();
   } catch (err) {
     console.error(err);
@@ -71,7 +90,7 @@ const handleToggleRole = async (user) => {
       ) : (
         <ul className="admin-users-list">
           {users.map((u) => {
-            const id = u._id || u.id || u.dni;
+            const id = u._id;
             const rol = (u.rol || "").toString().toLowerCase();
             const isAdmin = rol === "admin";
             const toggleLabel = isAdmin ? "Convertir a visitante" : "Convertir a admin";
