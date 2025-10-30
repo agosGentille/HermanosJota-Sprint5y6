@@ -40,18 +40,11 @@ function App() {
   // Función para verificar y cargar el usuario
   const cargarUsuario = () => {
     const usuarioEmail = localStorage.getItem("emailUsuario");
-    if (usuarioEmail) {
-      // Definir lógica para determinar si es admin
-
-      //utilicen este email para que les aparezcan las opcione de administrar.
-      const emailsAdmin = [
-        "admin@muebleriajota.com",
-      ];
-      const esAdmin = emailsAdmin.includes(usuarioEmail);
-
+    const rolUsuario = localStorage.getItem("rolUsuario"); // roles: administrador, editor, visitante
+    if (usuarioEmail && rolUsuario) {
       setUsuario({
         email: usuarioEmail,
-        rol: esAdmin ? "admin" : "user",
+        rol: rolUsuario,
       });
       return usuarioEmail;
     } else {
@@ -120,8 +113,8 @@ function App() {
     window.location.href = "/";
   };
 
-  // Función para verificar si es admin
-  const esAdmin = usuario && usuario.rol === "admin";
+  const esAdmin = usuario && usuario.rol === "administrador";
+  const esEditor = usuario && usuario.rol === "editor";
 
   return (
     <Router>
@@ -132,6 +125,7 @@ function App() {
         carrito={carrito}
         usuario={usuario}
         esAdmin={esAdmin}
+        esEditor={esEditor}
         onLogout={handleLogout}
       />
       <CarritoLateral
@@ -170,20 +164,20 @@ function App() {
           element={<PerfilUsuario usuario={usuario} onLogout={handleLogout} />}
         />
 
-        <Route
-          path="/admin"
-          element={esAdmin ? <AdminPage showToast={showToast} /> : <Navigate to="/" />}
-        />
-
+        {/* CRUD de productos: admin y editor */}
         <Route
           path="/admin/crear-producto"
-          element={esAdmin ? <AdminProductForm showToast={showToast} /> : <Navigate to="/" />}
+          element={(esAdmin || esEditor) ? <AdminProductForm showToast={showToast} /> : <Navigate to="/" />}
         />
         <Route
           path="/admin/editar-producto/:id"
-          element={
-            esAdmin ? <AdminProductForm editMode={true} showToast={showToast} /> : <Navigate to="/" />
-          }
+          element={(esAdmin || esEditor) ? <AdminProductForm editMode={true} showToast={showToast} /> : <Navigate to="/" />}
+        />
+
+        {/* CRUD de usuarios: solo admin */}
+        <Route
+          path="/admin"
+          element={(esAdmin || esEditor) ? <AdminPage showToast={showToast} usuario={usuario} /> : <Navigate to="/" />}
         />
       </Routes>
       <Footer />

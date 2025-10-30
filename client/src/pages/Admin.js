@@ -5,8 +5,9 @@ import AdminUserForm from "../components/AdminUserForm";
 import AdminUser from "../components/AdminUser";
 import AdminProductList from "../components/AdminProductList";
 
-function AdminPage({ showToast }) {
+function AdminPage({ showToast, usuario }) {
   const [section, setSection] = useState("manage-products");
+  const esAdmin = usuario?.rol === "administrador";
 
   return (
     <div className="admin-page">
@@ -20,12 +21,16 @@ function AdminPage({ showToast }) {
           >
             Crear usuarios
           </button> */}
-          <button
-            className={section === "users" ? "active" : ""}
-            onClick={() => setSection("users")}
-          >
-            Gestionar usuarios
-          </button>
+          {esAdmin && (
+            <>
+              <button
+                className={section === "users" ? "active" : ""}
+                onClick={() => setSection("users")}
+              >
+                Gestionar usuarios
+              </button>
+            </>
+          )}
           <button
             className={section === "add-product" ? "active" : ""}
             onClick={() => setSection("add-product")}
