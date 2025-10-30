@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/AdminForm.css";
 
-const AdminProductForm = ({ editMode = false }) => {
+const AdminProductForm = ({ editMode = false, inPanel = false, showToast }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ const AdminProductForm = ({ editMode = false }) => {
     sostenibilidad: "",
     colchon: "",
     masVendidos: false,
-    stock: 0, // ✅ CAMPO STOCK AGREGADO
+    stock: 0, 
     imagen: "",
     imagenHover: "",
   });
@@ -52,12 +52,16 @@ const AdminProductForm = ({ editMode = false }) => {
           setProducto(data);
         } catch (error) {
           console.error("Error:", error);
-          alert("Error al cargar el producto");
+          if (showToast) {
+            showToast("Error al cargar el producto", "error");
+          } else {
+            alert("Error al cargar el producto");
+          }
         }
       };
       fetchProducto();
     }
-  }, [editMode, id]);
+  }, [editMode, id, showToast]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -91,18 +95,31 @@ const AdminProductForm = ({ editMode = false }) => {
         throw new Error(errorData.error || "Error al guardar el producto");
       }
 
-      // Redirigir después de guardar
-      navigate("/productos");
+      if (showToast) {
+        if (editMode) {
+          showToast("¡Producto actualizado correctamente!");
+        } else {
+          showToast("¡Producto creado correctamente!");
+        }
+      }
+
+      setTimeout(() => {
+        navigate("/productos");
+      }, 1500);
+
     } catch (error) {
       console.error("Error:", error);
-      alert(error.message);
-    } finally {
+      if (showToast) {
+        showToast(error.message, "error");
+      } else {
+        alert(error.message);
+      }
       setLoading(false);
     }
   };
 
   return (
-    <div className="admin-form-container">
+    <div className={`admin-form-container ${inPanel ? 'in-panel' : 'standalone'}`}>
       <div className="admin-form-header">
         <h2>{editMode ? "Editar Producto" : "Crear Nuevo Producto"}</h2>
         <button className="btn-volver" onClick={() => navigate("/productos")}>
@@ -111,7 +128,6 @@ const AdminProductForm = ({ editMode = false }) => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Sección: Información Básica */}
         <div className="form-section">
           <h3>Información Básica</h3>
 
@@ -201,7 +217,6 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Imágenes */}
         <div className="form-section">
           <h3>Imágenes</h3>
           <div className="form-row">
@@ -230,7 +245,6 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Especificaciones Técnicas */}
         <div className="form-section">
           <h3>Especificaciones Técnicas</h3>
           <div className="form-grid">
@@ -297,7 +311,7 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Características de Confort */}
+        
         <div className="form-section">
           <h3>Características de Confort</h3>
           <div className="form-grid">
@@ -344,7 +358,6 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Características Adicionales */}
         <div className="form-section">
           <h3>Características Adicionales</h3>
           <div className="form-grid">
@@ -391,7 +404,7 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Certificaciones y Garantía */}
+        
         <div className="form-section">
           <h3>Certificaciones y Garantía</h3>
           <div className="form-grid">
@@ -438,7 +451,7 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Características Específicas */}
+       
         <div className="form-section">
           <h3>Características Específicas</h3>
           <div className="form-grid">
@@ -475,7 +488,7 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Botones de acción */}
+        
         <div className="form-actions">
           <button type="submit" className="btn-guardar" disabled={loading}>
             {loading
@@ -487,7 +500,7 @@ const AdminProductForm = ({ editMode = false }) => {
           <button
             type="button"
             className="btn-cancelar"
-            onClick={() => navigate("/productos")}
+            onClick={() => navigate("/admin")}
           >
             Cancelar
           </button>

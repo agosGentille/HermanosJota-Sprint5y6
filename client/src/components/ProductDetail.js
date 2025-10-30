@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import '../styles/productDetail.css';
 
 export default function ProductDetail({ onAddToCart, esAdmin }) {
-  const { id } = useParams(); // Este es el id personalizado del producto
+  const { id } = useParams();
   const navigate = useNavigate();
   const [producto, setProducto] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,6 +13,7 @@ export default function ProductDetail({ onAddToCart, esAdmin }) {
   const [backgroundPos, setBackgroundPos] = useState("0% 0%");
 
   useEffect(() => {
+    console.log("ID desde URL:", id);
     setLoading(true);
     fetch(`http://localhost:4000/api/productos/${id}`)
       .then(res => {
@@ -22,8 +23,8 @@ export default function ProductDetail({ onAddToCart, esAdmin }) {
       .then(data => {
         setProducto(data);
         setImages([
-          `http://localhost:4000${data.imagen}`, 
-          data.imagenHover ? `http://localhost:4000${data.imagenHover}` : null
+          data.imagen, 
+          data.imagenHover || null
         ].filter(Boolean));
       })
       .catch(err => setError(err.message))
@@ -37,11 +38,10 @@ export default function ProductDetail({ onAddToCart, esAdmin }) {
     setBackgroundPos(`${x}% ${y}%`);
   };
 
-  // FUNCIÓN PARA ELIMINAR PRODUCTO
   const handleEliminar = async () => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')) {
       try {
-        const response = await fetch(`http://localhost:4000/api/productos/${id}`, {
+        const response = await fetch(`http://localhost:4000/api/productos/${producto._id}`, {
           method: 'DELETE'
         });
 
@@ -127,11 +127,10 @@ export default function ProductDetail({ onAddToCart, esAdmin }) {
             Añadir al carrito
           </button>
 
-          {/* BOTONES DE ADMINISTRACIÓN - SOLO PARA ADMINS */}
           {esAdmin && (
             <div className="admin-actions" style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
               <Link 
-                to={`/admin/editar-producto/${producto.id}`} 
+                to={`/admin/editar-producto/${producto._id}`}
                 className="btn-editar"
                 style={{
                   background: '#ffc107',
