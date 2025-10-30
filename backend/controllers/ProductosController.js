@@ -1,9 +1,20 @@
 const Producto = require("../models/producto");
 
+//const Categoria = require("../models/category");
+
 // GET todos los productos
 const getAllProductos = async (req, res) => {
   try {
-    const productos = await Producto.find();
+    const { populate } = req.query;
+    
+    let query = Producto.find();
+    
+    // Populate condicional
+    if (populate === 'true' || populate === '1') {
+      query = query.populate('categoria');
+    }
+    
+    const productos = await query;
     res.json(productos);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -13,14 +24,15 @@ const getAllProductos = async (req, res) => {
 // GET producto por _id de MongoDB o por id personalizado
 const getProductoPorId = async (req, res) => {
   try {
+    const { populate } = req.query;
     let producto;
     
-    // Si el parámetro parece un ObjectId de MongoDB (24 caracteres hexadecimales)
+    const populateOption = (populate === 'true' || populate === '1') ? 'categoria' : '';
+    
     if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      producto = await Producto.findById(req.params.id);
+      producto = await Producto.findById(req.params.id).populate(populateOption);
     } else {
-      // Si no, buscar por el id personalizado
-      producto = await Producto.findOne({ id: req.params.id });
+      producto = await Producto.findOne({ id: req.params.id }).populate(populateOption);
     }
     
     if (!producto) {
@@ -35,16 +47,46 @@ const getProductoPorId = async (req, res) => {
 // POST crear nuevo producto
 const postProducto = async (req, res) => {
   try {
-    // Verificar si ya existe un producto con el mismo id personalizado
-    if (req.body.id) {
-      const productoExistente = await Producto.findOne({ id: req.body.id });
-      if (productoExistente) {
-        return res.status(400).json({ error: "Ya existe un producto con este ID personalizado" });
-      }
+    const { titulo, Precio, stock, categoria, id } = req.body;
+
+    // Validaciones antes de crear el producto
+    if (!titulo || titulo.trim() === '') {
+      return res.status(400).json({ error: 'El título es obligatorio' });
+    }
+    if (!Precio || Precio <= 0) {
+      return res.status(400).json({ error: 'El precio debe ser mayor a 0' });
+    }
+    if (!categoria) {
+      return res.status(400).json({ error: 'La categoría es obligatoria' });
+    }
+    if (!id || id.trim() === '') {
+      return res.status(400).json({ error: 'El ID personalizado es obligatorio' });
     }
 
-    const nuevoProducto = new Producto(req.body);
+    // Verificar si la categoría existe
+    const categoriaExistente = await Categoria.findById(categoria);
+    if (!categoriaExistente) {
+      return res.status(400).json({ error: 'La categoría no existe' });
+    }
+
+    // Verificar si ya existe un producto con el mismo id personalizado
+    const productoExistente = await Producto.findOne({ id: id });
+    if (productoExistente) {
+      return res.status(400).json({ error: "Ya existe un producto con este ID personalizado" });
+    }
+
+    // Crear el producto después de pasar todas las validaciones
+    const nuevoProducto = new Producto({
+      titulo: titulo.trim(),
+      Precio: parseFloat(Precio),
+      stock: parseInt(stock) || 0,
+      categoria: categoria, // Ahora es el ObjectId de la categoría
+      id: id.trim()
+    });
+
     const productoGuardado = await nuevoProducto.save();
+    // Popular la categoría en la respuesta
+    await productoGuardado.populate('categoria');
     res.status(201).json(productoGuardado);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -54,6 +96,14 @@ const postProducto = async (req, res) => {
 // PUT actualizar producto por _id o id personalizado
 const updateProducto = async (req, res) => {
   try {
+    // Si se está actualizando la categoría, verificar que exista
+    if (req.body.categoria) {
+      const categoriaExistente = await Categoria.findById(req.body.categoria);
+      if (!categoriaExistente) {
+        return res.status(400).json({ error: 'La categoría no existe' });
+      }
+    }
+
     let productoActualizado;
     
     if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -61,13 +111,13 @@ const updateProducto = async (req, res) => {
         req.params.id,
         req.body,
         { new: true, runValidators: true }
-      );
+      ).populate('categoria');
     } else {
       productoActualizado = await Producto.findOneAndUpdate(
         { id: req.params.id },
         req.body,
         { new: true, runValidators: true }
-      );
+      ).populate('categoria');
     }
 
     if (!productoActualizado) {
