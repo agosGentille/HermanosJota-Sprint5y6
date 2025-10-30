@@ -7,7 +7,6 @@ function TarjetasProductos({ productos, mostrarMax, onAddToCart }) {
 
   useEffect(() => {
     if (productos.length > 0) {
-      // pequeño delay para animar escaladamente
       const timeout = setTimeout(() => setMostrar(true), 100);
       return () => clearTimeout(timeout);
     }
@@ -18,10 +17,10 @@ function TarjetasProductos({ productos, mostrarMax, onAddToCart }) {
   return (
     <>
       {lista.map((producto) => (
-        <div key={producto.id} className={`tarjeta-producto ${mostrar ? 'mostrar' : ''}`}>
+        <div key={producto._id} className={`tarjeta-producto ${mostrar ? 'mostrar' : ''}`}>
           <div className="fondo-tarjeta">
             <div className='info-producto'>
-              <Link to={`/ProductDetail/${producto.id}`}>
+              <Link to={`/ProductDetail/${producto._id}`}>
                 <h3>{producto.titulo}</h3>
                 <div className="tarjeta-foto">
                   <img src={producto.imagen} alt={producto.titulo} className="img-normal" />

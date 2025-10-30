@@ -3,12 +3,14 @@ import "../styles/AdminPage.css";
 import AdminProductForm from "../components/AdminProductForm";
 import AdminUserForm from "../components/AdminUserForm";
 import AdminUser from "../components/AdminUser";
+import AdminProductList from "../components/AdminProductList";
 
-function AdminPage() {
-  const [section, setSection] = useState("users");
+function AdminPage({ showToast }) {
+  const [section, setSection] = useState("manage-products");
 
   return (
     <div className="admin-page">
+      
       <header className="admin-header">
         <h1>Panel de Administrador</h1>
         <nav className="admin-nav">
@@ -25,8 +27,14 @@ function AdminPage() {
             Gestionar usuarios
           </button>
           <button
-            className={section === "products" ? "active" : ""}
-            onClick={() => setSection("products")}
+            className={section === "add-product" ? "active" : ""}
+            onClick={() => setSection("add-product")}
+          >
+            Agregar producto
+          </button>
+          <button
+            className={section === "manage-products" ? "active" : ""}
+            onClick={() => setSection("manage-products")}
           >
             Gestionar productos
           </button>
@@ -36,15 +44,19 @@ function AdminPage() {
       <main className="admin-main">
         {section === "create-user" ? (
           <section className="admin-section">
-            <AdminUserForm />
+            <AdminUserForm showToast={showToast} />
           </section>
         ) : section === "users" ? (
           <section className="admin-section">
             <AdminUser />
           </section>
+        ) : section === "add-product" ? (
+          <section className="admin-section">
+            <AdminProductForm inPanel={true} showToast={showToast} />
+          </section>
         ) : (
           <section className="admin-section">
-            <AdminProductForm />
+            <AdminProductList onAddProductClick={() => setSection("add-product")} showToast={showToast} />
           </section>
         )}
       </main>
