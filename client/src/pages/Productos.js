@@ -4,6 +4,7 @@ import TarjetaProductos from "../components/TarjetasProductos"
 import { Link } from "react-router-dom";
 
 function Productos({onAddToCart}) {
+  console.log("Render Productos");
   // Estados principales
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
