@@ -8,9 +8,9 @@ async function conectarDB() {
       useUnifiedTopology: true,
       dbName: "catalogo", 
     });
-    console.log("✅ Conectado a MongoDB Atlas");
+    console.log("Conectado a MongoDB Atlas");
   } catch (error) {
-    console.error("❌ Error al conectar a MongoDB:", error.message);
+    console.error("Error al conectar a MongoDB:", error.message);
     process.exit(1);
   }
 }
