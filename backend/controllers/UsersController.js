@@ -89,6 +89,7 @@ exports.register = async (req, res) => {
       usuario: {
         nombre: nuevoUsuario.nombreCompleto,
         email: nuevoUsuario.email,
+        rol: nuevoUsuario.rol,
       },
     });
   } catch (error) {
@@ -97,19 +98,116 @@ exports.register = async (req, res) => {
   }
 };
 
+//geu user para "mi perfil"
 exports.getUsuario = async (req, res) => {
-  try {
-    //en este punto se supone que ya esta logueado el user. 
+  try { 
     // .select() sirve para elegir qué campos querés que te devuelva la consulta de MongoDB.
     // El "-" delante del nombre del campo indica exclusión.
     const usuario = await User.findById(req.user.id).select("-clave");
     //este select significa tipo: “traé todos los campos del usuario, menos el campo clave”.
+    console.log("Usuario encontrado: ", usuario);
 
-    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+    if (!usuario)
+      return res.status(404).json({ error: "Usuario no encontrado" });
     
     res.json({ usuario });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener los datos del usuario" });
+  }
+};
+
+exports.actualizarUsuario = async (req, res) => {
+  try {
+    const updates = { ...req.body };
+
+    if (updates.clave && updates.clave.trim() !== "") {
+      updates.clave = await bcrypt.hash(updates.clave, 10);
+    } else {
+      delete updates.clave;
+    }
+
+    delete updates.email;
+
+    const usuario = await User.findByIdAndUpdate(req.user.id, updates, { new: true }).select("-clave");
+
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    res.json({ usuario });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar usuario" });
+  }
+};
+
+exports.eliminarUsuario = async (req, res) => {
+  try {
+    const usuario = await User.findByIdAndDelete(req.user.id);
+
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    res.json({ mensaje: "Usuario eliminado exitosamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al eliminar usuario" });
+  }
+};
+
+// obtener todos los usuarios (solo admin)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const usuarios = await User.find().select("-clave");
+    res.status(200).json(usuarios);
+    console.log("Usuarios enviados: ", usuarios);
+  } catch (error) {
+    console.error("Error en /api/usuarios: ", error);
+    res.status(500).json({ error: "Error al obtener los usuarios" });
+  }
+};
+
+// actualizar rol de usuario (solo admin)
+exports.updateUserRole = async (req, res) => {
+  const { id } = req.params;
+  const { rol } = req.body;
+
+  try {
+    const usuario = await User.findById(id);
+    if (!usuario)
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    
+    if (usuario.rol === "administrador") {
+      return res.status(403).json({ error: "No se puede cambiar el rol de un administrador" });
+    }
+
+    // Solo aceptamos roles válidos
+    const rolesValidos = ["visitante", "editor"];
+    if (!rolesValidos.includes(rol)) {
+      return res.status(400).json({ error: "Rol inválido" });
+    }
+
+    usuario.rol = rol;
+    await usuario.save();
+    
+    res.json({ message: "Rol actualizado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar el rol" });
+  }
+};
+
+// eliminar usuario (solo admin)
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const usuario = await User.findById(id);
+    if (!usuario)
+      return res.status(404).json({ error: "Usuario no encontrado" });
+
+    await User.findByIdAndDelete(id);
+    res.json({ message: "Usuario eliminado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al eliminar el usuario" });
   }
 };

@@ -1,30 +1,31 @@
 require("dotenv").config();
 const express = require("express");
+const mongoose = require("mongoose");
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 const cors = require("cors");
 const path = require("path");
-const conectarDB = require("./database.js");
+const conectarDB = require("./config/db.js");
 conectarDB();
 
 const usersRoutes = require("./routes/usersRoutes.js");
-const productosRoutes = require("./routes/productos.js");
+const productRoutes = require("./routes/productRoutes.js");
 const contactoRoutes = require("./routes/ContactRoutes.js");
 const carritoRoutes = require("./routes/carritoRoutes");
 
-app.use(cors()); // permite leer JSON en req.body
-app.use(express.json()); //parsea JSON para que no llegue undefined
+app.use(cors());
+app.use(express.json());
 
-//Middleware global que muestre método y url de la petición (Punto 4 consigna final)
+// Middleware global que muestre método y url de la petición
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
 });
 
-//rutas
-app.use("/api", usersRoutes);   
-app.use('/api/productos', productosRoutes);
+// Rutas
+app.use("/api", usersRoutes);
+app.use("/api/productos", productRoutes);
 app.use("/api/contacto", contactoRoutes);
 app.use("/api/carrito", carritoRoutes);
 
@@ -39,6 +40,7 @@ app.get("/", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ error: `Ruta: ${req.originalUrl} - no encontrada` });
 });
+
 // 500
 app.use((err, req, res, next) => {
   console.error(err.stack);

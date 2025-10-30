@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation  } from 'react-router-dom';
-import ModalLogin from './ModalLogin';
-import ModalRegister from './ModalRegister';
-import '../styles/HeaderFooter.css';
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import ModalLogin from "./ModalLogin";
+import ModalRegister from "./ModalRegister";
+import "../styles/HeaderFooter.css";
 /*Imports de Imágenes*/
-import logo from '../images/logo.svg';
-import menu from '../images/iconoMenu.png';
+import logo from "../images/logo.svg";
+import menu from "../images/iconoMenu.png";
 
-function Header({ toggleCarrito, carrito }) {
+function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
   const [showLogin, setShowLogin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [usuario, setUsuario] = useState({ nombre: null, email: null });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showRegister, setShowRegister] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -22,28 +21,13 @@ function Header({ toggleCarrito, carrito }) {
   // Detectar cambios de tamaño de pantalla
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Cargar usuario guardado
-  useEffect(() => {
-    const nombreGuardado = localStorage.getItem("nombreUsuario");
-    const emailGuardado = localStorage.getItem("emailUsuario");
-    if (nombreGuardado || emailGuardado) {
-      setUsuario({ nombre: nombreGuardado, email: emailGuardado });
-    }
-  }, []);
-
-  const handleLogin = ({ nombre, email }) => {
-    setUsuario({ nombre, email });
-  };
-
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
     if (window.confirm("¿Desea cerrar sesión?")) {
-      localStorage.removeItem("nombreUsuario");
-      localStorage.removeItem("emailUsuario");
-      setUsuario({ nombre: null, email: null });
+      onLogout();
       setShowUserMenu(false);
       if (location.pathname === "/profile") {
         navigate("/");
@@ -56,28 +40,42 @@ function Header({ toggleCarrito, carrito }) {
   useEffect(() => {
     if (carrito.length > 0) {
       setBounce(true);
-      const timeout = setTimeout(() => setBounce(false), 300); // dura 0.3s
+      const timeout = setTimeout(() => setBounce(false), 300);
       return () => clearTimeout(timeout);
     }
   }, [carrito]);
 
   return (
-    <header className='header-sticky'>
+    <header className="header-sticky">
       <div className="header-marca">
         <img src={logo} alt="Logo Hermanos Jota" id="logo" />
         <p>Hermanos Jota</p>
       </div>
 
-      <nav className={`header-nav ${isMobile && menuOpen ? 'open' : ''}`}>
+      <nav className={`header-nav ${isMobile && menuOpen ? "open" : ""}`}>
         {isMobile && (
           <span className="close" onClick={() => setMenuOpen(false)}>
             &times;
           </span>
         )}
         <ul>
-          <li><Link to="/">INICIO</Link></li>
-          <li><Link to="/productos">PRODUCTOS</Link></li>
-          <li><Link to="/contacto">CONTACTO</Link></li>
+          <li>
+            <Link to="/">INICIO</Link>
+          </li>
+          <li>
+            <Link to="/productos">PRODUCTOS</Link>
+          </li>
+          <li>
+            <Link to="/contacto">CONTACTO</Link>
+          </li>
+          {/* Solo mostrar Administrar si es admin */}
+          {esAdmin && (
+            <li>
+              <Link to="/admin" className="admin-link">
+                ADMINISTRAR
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
 
@@ -85,26 +83,33 @@ function Header({ toggleCarrito, carrito }) {
         {/* Icono usuario */}
         <div className="user-container" ref={userMenuRef}>
           <span
-            className={`material-symbols-outlined header-usuario ${usuario.nombre ? "logueado" : ""}`}
+            className={`material-symbols-outlined header-usuario ${
+              usuario ? "logueado" : ""
+            }`}
             onClick={() => {
-              if (usuario.nombre) {
-                setShowUserMenu(prev => !prev); // toggle menú
+              if (usuario) {
+                setShowUserMenu((prev) => !prev);
               } else {
                 setShowLogin(true);
               }
             }}
-            title={usuario.nombre ? "Usuario" : "Iniciar sesión"}
+            title={usuario ? "Usuario" : "Iniciar sesión"}
           >
             account_circle
           </span>
 
           {/* Menú desplegable para cerrar sesion o ver perfil */}
-          {usuario.nombre && showUserMenu && (
+          {usuario && showUserMenu && (
             <div className={`user-dropdown ${showUserMenu ? "show" : ""}`}>
-              <button onClick={() => { navigate("/profile"); setShowUserMenu(false); }}>
+              <button
+                onClick={() => {
+                  navigate("/profile");
+                  setShowUserMenu(false);
+                }}
+              >
                 Mi perfil
               </button>
-              <button onClick={handleLogout} className="logout-btn">
+              <button onClick={handleLogoutClick} className="logout-btn">
                 Cerrar sesión
               </button>
             </div>
@@ -112,25 +117,38 @@ function Header({ toggleCarrito, carrito }) {
         </div>
 
         {/* Modales */}
-        <ModalLogin 
-          show={showLogin} 
-          onClose={() => setShowLogin(false)} 
-          onLogin={handleLogin} 
-          onShowRegister={() => setShowRegister(true)} 
+        <ModalLogin
+          show={showLogin}
+          onClose={() => setShowLogin(false)}
+          onLogin={(userData) => {
+            // Esta función se llamará cuando el login sea exitoso
+            // El estado de usuario se manejará en App.js a través de localStorage
+            setShowLogin(false);
+          }}
+          onShowRegister={() => setShowRegister(true)}
         />
-        <ModalRegister 
-          show={showRegister} 
-          onClose={() => setShowRegister(false)} 
-          onLogin={handleLogin} 
-          onShowLogin={() => setShowLogin(true)} 
+        <ModalRegister
+          show={showRegister}
+          onClose={() => setShowRegister(false)}
+          onLogin={(userData) => {
+            // Esta función se llamará cuando el registro sea exitoso
+            // El estado de usuario se manejará en App.js a través de localStorage
+            setShowRegister(false);
+          }}
+          onShowLogin={() => setShowLogin(true)}
         />
 
         {/* Carrito */}
         <div className="header-carrito-container" onClick={toggleCarrito}>
-          <span className="header-carrito material-symbols-outlined" title="Carrito">
+          <span
+            className="header-carrito material-symbols-outlined"
+            title="Carrito"
+          >
             shopping_bag
           </span>
-          <span className={`numerito ${bounce ? 'bounce' : ''}`}>{carrito.length}</span>
+          <span className={`numerito ${bounce ? "bounce" : ""}`}>
+            {carrito.length}
+          </span>
         </div>
 
         {/* Menú hamburguesa para móvil */}
