@@ -17,8 +17,8 @@ router.get("/users", UsersController.getAllUsers);
 
 router.get("/users/:id", UsersController.getUsuario);
 
-router.put("/users/role/:id", UsersController.updateUserRole);
+router.put("/users/role/:id", verificarToken, UsersController.updateUserRole);
 
-router.delete("/users/:id", UsersController.deleteUser);
+router.delete("/users/:id", verificarToken, UsersController.deleteUser);
 
 module.exports = router;

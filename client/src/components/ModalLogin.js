@@ -43,6 +43,9 @@ function ModalLogin({ show, onClose, onLogin, onShowRegister }) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("nombreUsuario", data.usuario.nombre);
         localStorage.setItem("emailUsuario", data.usuario.email);
+        localStorage.setItem("rolUsuario", data.usuario.rol);
+        console.log("Rol del usuario logueado:", data.usuario.rol);
+        
         onLogin({ nombre: data.usuario.nombre });
         onClose();
       } catch (err) {

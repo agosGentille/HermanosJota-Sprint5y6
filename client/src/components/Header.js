@@ -7,7 +7,7 @@ import "../styles/HeaderFooter.css";
 import logo from "../images/logo.svg";
 import menu from "../images/iconoMenu.png";
 
-function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
+function Header({ toggleCarrito, carrito, usuario, esAdmin, esEditor, onLogout }) {
   const [showLogin, setShowLogin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -69,7 +69,7 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, onLogout }) {
             <Link to="/contacto">CONTACTO</Link>
           </li>
           {/* Solo mostrar Administrar si es admin */}
-          {esAdmin && (
+          {(esAdmin || usuario?.rol === "editor") && (
             <li>
               <Link to="/admin" className="admin-link">
                 ADMINISTRAR
