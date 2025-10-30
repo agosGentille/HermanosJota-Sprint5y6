@@ -21,11 +21,15 @@ function TarjetasProductos({ productos, mostrarMax, onAddToCart }) {
           <div className="fondo-tarjeta">
             <div className='info-producto'>
               <Link to={`/ProductDetail/${producto._id}`}>
-                <h3>{producto.titulo}</h3>
                 <div className="tarjeta-foto">
                   <img src={producto.imagen} alt={producto.titulo} className="img-normal" />
                   <img src={producto.imagenHover} alt={producto.titulo} className="img-hover" />
+                  {/* Badge Más Vendido */}
+                  {producto.masVendidos && (
+                    <span className="badge-mas-vendido-catalogo">Más Vendido</span>
+                  )}
                 </div>
+                <h3>{producto.titulo}</h3>
                 <p>${producto.Precio.toLocaleString('es-AR')}</p>
               </Link>
             </div>
