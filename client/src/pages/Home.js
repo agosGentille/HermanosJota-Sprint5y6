@@ -19,6 +19,7 @@ function Home({ onAddToCart }) {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  console.log("Render Home");
 
   useEffect(() => {
     //sirve para hacer peticiones HTTP. En este caso al backend para pedir la lista d productos
@@ -31,14 +32,11 @@ function Home({ onAddToCart }) {
     })
     //Este .then recibe el data (el listado de productos) ya convertido en JSON
     .then(data => {
-      const productosConUrl = data.map(p => ({ //recorre cada producto (p) y devuelve un objeto nuevo
-        //copia todas las propiedades originales de ese producto
-        ...p,
-        //declaramos la ruta completa de las imagenes xq en "data" tenemos las rutas relativas
-        //y x defecto va al puerto 3000 (donde corre el front) pero estan en el backend (puerto 4000)
-        imagen: `http://localhost:4000${p.imagen}`,
-        imagenHover: `http://localhost:4000${p.imagenHover}`
-      }));
+      const productosConUrl = data.map((p) => ({
+          ...p,
+          imagen: p.imagen, // Usar ruta relativa directamente
+          imagenHover: p.imagenHover || p.imagen,
+        }));
       //guardamos los productos con las nuevas url
       setProductos(productosConUrl);
       //Actualiza estado loading para mostrar un cartel de "Cargando…"

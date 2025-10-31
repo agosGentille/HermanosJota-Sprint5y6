@@ -40,16 +40,17 @@ function App() {
   // Función para verificar y cargar el usuario
   const cargarUsuario = () => {
     const usuarioEmail = localStorage.getItem("emailUsuario");
-    const rolUsuario = localStorage.getItem("rolUsuario"); // roles: administrador, editor, visitante
+    const rolUsuario = localStorage.getItem("rolUsuario");
+
     if (usuarioEmail && rolUsuario) {
-      setUsuario({
-        email: usuarioEmail,
-        rol: rolUsuario,
+      setUsuario((prev) => {
+        if (prev?.email === usuarioEmail && prev?.rol === rolUsuario) {
+          return prev; // evita re-render si no cambió nada
+        }
+        return { email: usuarioEmail, rol: rolUsuario };
       });
-      return usuarioEmail;
     } else {
-      setUsuario(null);
-      return null;
+      setUsuario((prev) => (prev ? null : prev)); // evita cambios innecesarios
     }
   };
 
@@ -70,8 +71,7 @@ function App() {
     };
 
     window.addEventListener("storage", handleStorageChange);
-    // También verificar periódicamente (por si las dudas)
-    const interval = setInterval(cargarUsuario, 2000);
+    const interval = setInterval(cargarUsuario);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
@@ -177,7 +177,7 @@ function App() {
         {/* CRUD de usuarios: solo admin */}
         <Route
           path="/admin"
-          element={(esAdmin || esEditor) ? <AdminPage showToast={showToast} usuario={usuario} /> : <Navigate to="/" />}
+          element={(esAdmin || esEditor) ? <AdminPage showToast={showToast} usuario={usuario}/> : <Navigate to="/" />}
         />
       </Routes>
       <Footer />
