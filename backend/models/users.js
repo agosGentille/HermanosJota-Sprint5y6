@@ -6,7 +6,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   clave: { type: String, required: true },
   telefono: { type: String },
-  rol: { type: String, default: "visitante" }
+  calleynumero: { type: String },
+  localidad: { type: String },
+  provincia: { type: String },
+  pais: { type: String },
 });
 
 module.exports = mongoose.model("User", userSchema, "users");
