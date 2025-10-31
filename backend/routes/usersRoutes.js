@@ -12,6 +12,9 @@ router.get("/usuario", verificarToken, UsersController.getUsuario);
 router.put("/usuario", verificarToken, UsersController.actualizarUsuario);
 router.delete("/usuario", verificarToken, UsersController.eliminarUsuario);
 
+// no se le pide token porq es un caso de olvido
+router.put("/usuario/password", UsersController.updatePassword);
+
 //rutas para admin - gestion de usuarios
 router.get("/users", UsersController.getAllUsers);
 

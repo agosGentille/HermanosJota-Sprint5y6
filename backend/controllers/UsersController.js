@@ -103,7 +103,8 @@ exports.getUsuario = async (req, res) => {
   try { 
     // .select() sirve para elegir qué campos querés que te devuelva la consulta de MongoDB.
     // El "-" delante del nombre del campo indica exclusión.
-    const usuario = await User.findById(req.user.id).select("-clave");
+    const id = req.user.id;
+    const usuario = await User.findById(id).select("-clave");
     //este select significa tipo: “traé todos los campos del usuario, menos el campo clave”.
     console.log("Usuario encontrado: ", usuario);
 
@@ -150,6 +151,30 @@ exports.eliminarUsuario = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al eliminar usuario" });
+  }
+};
+
+// actualizar contraseña
+exports.updatePassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const usuario = await User.findOne({ email });
+  
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+  
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    usuario.clave = hashedPassword;
+  
+    await usuario.save();
+  
+    res.json({ message: "Contraseña actualizada correctamente" });
+  
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al actualizar la contraseña" });
   }
 };
 

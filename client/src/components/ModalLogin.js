@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '../styles/HeaderFooter.css';
 
-function ModalLogin({ show, onClose, onLogin, onShowRegister }) {
+function ModalLogin({ show, onClose, onLogin, onShowRegister, onShowForgot }) {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -90,6 +90,13 @@ function ModalLogin({ show, onClose, onLogin, onShowRegister }) {
             >
               Registrate!
             </span>
+          </p>
+
+          <p className="registro-texto link-registrate" onClick={() => {
+            onClose();
+            if (onShowForgot) onShowForgot();
+          }}>
+            ¿Olvidaste tu contraseña?
           </p>
         </form>
       </div>

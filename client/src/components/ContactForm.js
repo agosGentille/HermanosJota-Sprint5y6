@@ -4,8 +4,8 @@ import ReCaptchaCheckbox from "./ReCaptchaCheckbox";
 // para el estado inicial se puede tomar los datos del localStorage
 
 const initialState = {
-  nombre: localStorage.getItem("nombreUsuario") || "",
-  email: localStorage.getItem("emailUsuario") || "",
+  nombre: window.localStorage.getItem("nombreUsuario") || "",
+  email: window.localStorage.getItem("emailUsuario") || "",
   mensaje: "",
 };
 
