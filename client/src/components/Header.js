@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ModalLogin from "./ModalLogin";
 import ModalRegister from "./ModalRegister";
+import ModalForgotPassword from "./ModalForgotPassword";
 import "../styles/HeaderFooter.css";
 /*Imports de Imágenes*/
 import logo from "../images/logo.svg";
@@ -13,6 +14,8 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, esEditor, onLogout }
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showRegister, setShowRegister] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+
 
   const userMenuRef = useRef(null);
   const navigate = useNavigate();
@@ -126,6 +129,7 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, esEditor, onLogout }
             setShowLogin(false);
           }}
           onShowRegister={() => setShowRegister(true)}
+          onShowForgot={() => setShowForgot(true)}
         />
         <ModalRegister
           show={showRegister}
@@ -136,6 +140,10 @@ function Header({ toggleCarrito, carrito, usuario, esAdmin, esEditor, onLogout }
             setShowRegister(false);
           }}
           onShowLogin={() => setShowLogin(true)}
+        />
+        <ModalForgotPassword
+          show={showForgot}
+          onClose={() => setShowForgot(false)}
         />
 
         {/* Carrito */}
