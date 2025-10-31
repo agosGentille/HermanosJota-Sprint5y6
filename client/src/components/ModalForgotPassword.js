@@ -80,10 +80,10 @@ function ModalForgotPassword({ show, onClose, onLogin, onShowLogin}) {
 
     setTimeout(async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/usuarios", {
-          method: "GET",
+        const res = await fetch("http://localhost:4000/api/usuario/password", {
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify({ email, newPassword: password, captchaToken })
+          body: JSON.stringify({ email, newPassword: password, captchaToken })
         });
 
         setLoading(false);
