@@ -1,39 +1,8 @@
-const RECAPTCHA_SECRET = process.env.RECAPTCHA_SECRET;
 const formularios = [];
-
-const verifyCaptcha = async (token, remoteIp) => {
-  const verifyUrl = "https://www.google.com/recaptcha/api/siteverify";
-  const params = new URLSearchParams();
-  params.append("secret", RECAPTCHA_SECRET);
-  params.append("response", token);
-  params.append("remoteip", remoteIp);
-
-  const googleRes = await fetch(verifyUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params.toString(),
-  });
-
-  const data = await googleRes.json();
-  return data;
-};
 
 const postFormulario = async (req, res) => {
   try {
-    const { nombre, email, mensaje, captchaToken } = req.body;
-
-    if (!captchaToken) {
-      return res.status(400).json({
-        error: "Token de reCaptcha es requerido",
-      });
-    }
-
-    const captchaResult = await verifyCaptcha(captchaToken, req.ip);
-
-    if (!captchaResult.success) {
-      console.error("reCAPTCHA error:", captchaResult["error-codes"]);
-      return res.status(403).json({ error: "Captcha inválido" });
-    }
+    const { nombre, email, mensaje } = req.body;
 
     if (!nombre || !email || !mensaje) {
       return res.status(400).json({
