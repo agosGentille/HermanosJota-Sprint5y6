@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '../styles/HeaderFooter.css';
 import { validarEmail } from "../utils/validarEmail";
+import ReCaptchaCheckbox from "./ReCaptchaCheckbox";
 
 function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
   const [nombre, setNombre] = useState("");
@@ -11,6 +12,20 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
   const [loading, setLoading] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false); 
   const [showPassword2, setShowPassword2] = useState(false);
+
+  const [showCaptcha, setShowCaptcha] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const [errors, setErrors] = useState({ captcha: "" });
+  
+
+  const handleCaptchaVerify = (token) => {
+    console.log("ReCAPTCHA verificado, token:", token);
+    setCaptchaToken(token);
+    setErrors((prev) => ({
+      ...prev,
+      captcha: "",
+    }));
+  };
 
   useEffect(() => {
     if (show) {
@@ -28,6 +43,21 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
     e.preventDefault();
     setError("");
     setLoading(true);
+ 
+    if (!showCaptcha) {
+      setShowCaptcha(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!captchaToken) {
+      setErrors((prev) => ({
+        ...prev,
+        captcha: "Por favor, complete el reCAPTCHA.",
+      }));
+      setLoading(false);
+      return;
+    }
 
     const { valido, error: errorEmail } = validarEmail(email);
     if (!valido) {
@@ -38,6 +68,7 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
 
     if (password !== password2) {
       setError("Las contraseñas no coinciden");
+      setLoading(false);
       return;
     }
 
@@ -46,7 +77,7 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
         const res = await fetch("http://localhost:4000/api/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nombre, email, password })
+          body: JSON.stringify({ nombre, email, password, captchaToken })
         });
 
         setLoading(false);
@@ -119,8 +150,26 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
               {showPassword2 ? "visibility_off" : "visibility"}
             </span>
           </div>
+
+          {showCaptcha && (
+            <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+              <ReCaptchaCheckbox
+                siteKey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+                onVerify={handleCaptchaVerify}
+              />
+              {errors.captcha && (
+                <span
+                  className="error-message"
+                  role="alert"
+                  style={{ display: "block", marginTop: "0.5rem" }}
+                >
+                  ⚠️ {errors.captcha}
+                </span>
+              )}
+            </div>
+          )}
           
-          <button type="submit" className="button-submit">{loading ? "Registrando..." : "Registrarse"}</button>
+          <button type="submit" className="button-submit">{loading ? "Procesando..." : "Registrarse"}</button>
         </form>
       </div>
     </div>
