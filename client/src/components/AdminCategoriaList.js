@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/AdminList.css";
 
+
 const AdminCategoriasList = ({ showToast, onAddCategoryClick, onEditCategory }) => {
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
