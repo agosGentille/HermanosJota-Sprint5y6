@@ -17,7 +17,12 @@ const carritoRoutes = require("./routes/carritoRoutes");
 // ⬇️ NUEVO: importar las rutas de categorías
 const categoriesRoutes = require("./routes/categories.js");
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://hermanosjotasprint5y6.vercel.app",
+  ]
+}));
 app.use(express.json());
 
 // Middleware global de logging
