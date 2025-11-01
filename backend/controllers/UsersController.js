@@ -1,4 +1,6 @@
 const User = require("../models/users");
+const Rols = require("../models/roles");
+const mongoose = require("mongoose");
 // librería para *hashear* contraseñas (convertirlas en algo ilegible)
 // Ejemplo: "123456"(contraseña) → "$2a$10$1oEJkf...."(hash)
 // Nunca se guarda la contraseña real, solo el hash.
@@ -71,11 +73,13 @@ exports.register = async (req, res) => {
     //    12 -> más seguro pero más lento.
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const rolVisitante = await Rols.findOne({ nombre: "visitante" });
+
     const nuevoUsuario = new User({
       nombreCompleto: nombre,
       email,
-      clave: hashedPassword, // Guardamos el hash, no el password original
-      rol: rol || "visitante",
+      clave: hashedPassword,
+      rol: rolVisitante ? rolVisitante._id : null,
     });
 
     await nuevoUsuario.save(); //como intervinimos los datos, usamos save() en vez de create()
@@ -89,7 +93,7 @@ exports.register = async (req, res) => {
       usuario: {
         nombre: nuevoUsuario.nombreCompleto,
         email: nuevoUsuario.email,
-        rol: nuevoUsuario.rol,
+        rol: rolVisitante ? rolVisitante.nombre : "visitante",
       },
     });
   } catch (error) {
@@ -103,8 +107,9 @@ exports.getUsuario = async (req, res) => {
   try { 
     // .select() sirve para elegir qué campos querés que te devuelva la consulta de MongoDB.
     // El "-" delante del nombre del campo indica exclusión.
-    const id = req.user.id;
-    const usuario = await User.findById(id).select("-clave");
+    const usuario = await User.findById(req.user.id)
+      .select("-clave")
+      .populate("rol", "nombre");
     //este select significa tipo: “traé todos los campos del usuario, menos el campo clave”.
     console.log("Usuario encontrado: ", usuario);
 
@@ -181,7 +186,7 @@ exports.updatePassword = async (req, res) => {
 // obtener todos los usuarios (solo admin)
 exports.getAllUsers = async (req, res) => {
   try {
-    const usuarios = await User.find().select("-clave");
+    const usuarios = await User.find().select("-clave").populate("rol", "nombre");
     res.status(200).json(usuarios);
     console.log("Usuarios enviados: ", usuarios);
   } catch (error) {
@@ -194,38 +199,47 @@ exports.getAllUsers = async (req, res) => {
 exports.updateUserRole = async (req, res) => {
   const { id } = req.params;
   const { rol } = req.body;
-
+ 
   try {
     const usuario = await User.findById(id);
-    if (!usuario)
-      return res.status(404).json({ error: "Usuario no encontrado" });
-    
-    if (usuario.rol === "administrador") {
+    if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const rolActual = await Rols.findById(usuario.rol);
+    if (rolActual?.nombre === "administrador") {
       return res.status(403).json({ error: "No se puede cambiar el rol de un administrador" });
     }
 
-    // Solo aceptamos roles válidos
-    const rolesValidos = ["visitante", "editor"];
-    if (!rolesValidos.includes(rol)) {
+    let rolAsignado;
+    if (mongoose.Types.ObjectId.isValid(rol)) {
+      rolAsignado = await Rols.findById(rol);
+    } else {
+      rolAsignado = await Rols.findOne({ nombre: rol });
+    }
+
+    if (!rolAsignado) {
       return res.status(400).json({ error: "Rol inválido" });
     }
 
-    usuario.rol = rol;
+    usuario.rol = rolAsignado._id;
     await usuario.save();
-    
-    res.json({ message: "Rol actualizado correctamente" });
+
+    res.json({
+      message: `Rol actualizado correctamente a ${rolAsignado.nombre}`,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al actualizar el rol" });
   }
 };
 
+
 // eliminar usuario (solo admin)
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const usuario = await User.findById(id);
+    const usuario = await User.findById(req.params.id).select("-clave").populate("rol", "nombre");
+
     if (!usuario)
       return res.status(404).json({ error: "Usuario no encontrado" });
 
