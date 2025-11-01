@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  id: mongoose.Schema.Types.ObjectId,
   nombreCompleto: { type: String, required: true },
   dni: { type: String },
   email: { type: String, required: true, unique: true },
   clave: { type: String, required: true },
   telefono: { type: String },
-  rol: { type: String, default: "visitante" },
+  rol: {type: mongoose.Schema.Types.ObjectId, ref: "rols", required: true},
   direccionCalle: { type: String },
   direccionLocalidad: { type: String },
   direccionProvincia: { type: String },
