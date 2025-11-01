@@ -67,10 +67,15 @@ const AdminUser = () => {
       return;
     }
 
-    const userRol = (user.rol || "").toLowerCase();
+    const userRolRaw =
+      typeof user.rol === "object"
+        ? user.rol?.nombre
+        : user.rol;
+
+    const userRol = typeof userRolRaw === "string" ? userRolRaw.toLowerCase() : "";
+
     let nuevoRol;
 
-    // Cambiamos entre visitante <-> editor, el admin no se toca
     if (userRol === "visitante") nuevoRol = "editor";
     else if (userRol === "editor") nuevoRol = "visitante";
     else {
@@ -109,10 +114,19 @@ const AdminUser = () => {
       ) : (
         <ul className="admin-users-list">
           {users.map((u) => {
-            const userRol = (u.rol || "").toLowerCase();
+            const rolRaw =
+              typeof u.rol === "object"
+                ? u.rol?.nombre
+                : u.rol;
+
+            const userRol = typeof rolRaw === "string" ? rolRaw.toLowerCase() : "";
+
             const toggleLabel =
-              userRol === "editor" ? "Convertir a visitante" :
-              userRol === "visitante" ? "Convertir a editor" : "-";
+              userRol === "editor"
+                ? "Convertir a visitante"
+                : userRol === "visitante"
+                ? "Convertir a editor"
+                : "-";
 
             return (
               <li key={u._id} className="admin-user-row">
@@ -121,7 +135,7 @@ const AdminUser = () => {
                   <div><strong>DNI:</strong> {u.dni || "-"}</div>
                   <div><strong>Email:</strong> {u.email || "-"}</div>
                   <div><strong>Teléfono:</strong> {u.telefono || "-"}</div>
-                  <div><strong>Rol:</strong> {u.rol || "-"}</div>
+                  <div><strong>Rol:</strong> {typeof u.rol === "object" ? u.rol?.nombre : u.rol || "-"}</div>
                 </div>
 
                 <div className="user-actions">
