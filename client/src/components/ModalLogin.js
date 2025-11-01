@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '../styles/HeaderFooter.css';
 
-function ModalLogin({ show, onClose, onLogin, onShowRegister }) {
+function ModalLogin({ show, onClose, onLogin, onShowRegister, onShowForgot }) {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,6 +43,9 @@ function ModalLogin({ show, onClose, onLogin, onShowRegister }) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("nombreUsuario", data.usuario.nombre);
         localStorage.setItem("emailUsuario", data.usuario.email);
+        localStorage.setItem("rolUsuario", data.usuario.rol);
+        console.log("Rol del usuario logueado:", data.usuario.rol);
+        
         onLogin({ nombre: data.usuario.nombre });
         onClose();
       } catch (err) {
@@ -87,6 +90,13 @@ function ModalLogin({ show, onClose, onLogin, onShowRegister }) {
             >
               Registrate!
             </span>
+          </p>
+
+          <p className="registro-texto link-registrate" onClick={() => {
+            onClose();
+            if (onShowForgot) onShowForgot();
+          }}>
+            ¿Olvidaste tu contraseña?
           </p>
         </form>
       </div>

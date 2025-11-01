@@ -3,8 +3,8 @@ import "../styles/StyleProductos.css";
 import TarjetaProductos from "../components/TarjetasProductos"
 import { Link } from "react-router-dom";
 
-
 function Productos({onAddToCart}) {
+  console.log("Render Productos");
   // Estados principales
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,12 +13,12 @@ function Productos({onAddToCart}) {
   // Estados para filtros
   const [filtro, setFiltro] = useState("");
   const [ordenamiento, setOrdenamiento] = useState("tituloAsc");
-  const [categoriaSeleccionadas, setCategoriaSeleccionadas] = useState([]); //categorias seleccionadas por el usuario para filtrar
+  const [categoriaSeleccionadas, setCategoriaSeleccionadas] = useState([]);
   const [precioSeleccionado, setPrecioSeleccionado] = useState("");
   const [certificadoSeleccionado, setCertificadoSeleccionado] = useState(false);
   const [garantiaSeleccionada, setGarantiaSeleccionada] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
-  const [categoriasFiltro, setCategoriasFiltro]  =  useState([]); //guardo todas las categorias para luego poder filtrar
+  const [categoriasFiltro, setCategoriasFiltro] = useState([]);
 
   /* Carga inicial de productos */
   useEffect(() => {
@@ -28,12 +28,11 @@ function Productos({onAddToCart}) {
         return res.json();
       })
       .then((data) => {
+        // CORREGIDO: Eliminar localhost:4000 de las imágenes (usar rutas relativas)
         const productosConUrl = data.map((p) => ({
           ...p,
-          imagen: `http://localhost:4000${p.imagen}`,
-          imagenHover: p.imagenHover
-            ? `http://localhost:4000${p.imagenHover}`
-            : `http://localhost:4000${p.imagen}`,
+          imagen: p.imagen, // Usar ruta relativa directamente
+          imagenHover: p.imagenHover || p.imagen,
         }));
 
         setProductos(productosConUrl);
@@ -72,7 +71,7 @@ function Productos({onAddToCart}) {
       </main>
     );
 
-    // Cálculo de límites de precio para colocar en el filtro de precios
+  // Cálculo de límites de precio para colocar en el filtro de precios
   const precios = productos.map((p) => p.Precio);
   const precioPromedio = precios.reduce((acc, p) => acc + p, 0) / precios.length;
 
@@ -110,7 +109,6 @@ function Productos({onAddToCart}) {
     );
   });
 
-
   //manejo de filtros
   const limpiarFiltros = () => {
     setFiltro("");
@@ -133,7 +131,6 @@ function Productos({onAddToCart}) {
   };
 
   //Ordenamiento
-
   const productosOrdenados = [...productosFiltrados].sort((a, b) => {
     switch (ordenamiento) {
       case "precioasc":
@@ -284,9 +281,11 @@ function Productos({onAddToCart}) {
           {productosOrdenados.length === 0 ? (
             <p className="mensaje-vacio">No se encontraron productos</p>
           ) : (
-            <TarjetaProductos productos={productosOrdenados}
-            onAddToCart={onAddToCart}/>
-          )}
+            <TarjetaProductos 
+              productos={productosOrdenados}
+              onAddToCart={onAddToCart}
+            />
+          )}
         </div>
       </section>
     </main>

@@ -24,7 +24,10 @@ import {
   calcularTotal,
 } from "./components/CarritoFunciones";
 import Admin from "./pages/Admin";
+import AdminPage from "./pages/Admin"; 
 import AdminProductForm from "./components/AdminProductForm";
+import ToastContainer from "./components/ToastContainer";
+import useToast from "./hooks/useToast";
 
 function App() {
   const [isCarritoAbierto, setIsCarritoAbierto] = useState(false);
@@ -32,29 +35,22 @@ function App() {
   const [usuario, setUsuario] = useState(null);
   const saveTimeout = useRef(null);
   const toggleCarrito = () => setIsCarritoAbierto((prev) => !prev);
+  const { toasts, showToast, removeToast } = useToast();
 
   // Función para verificar y cargar el usuario
   const cargarUsuario = () => {
     const usuarioEmail = localStorage.getItem("emailUsuario");
-    if (usuarioEmail) {
-      // Definir lógica para determinar si es admin
+    const rolUsuario = localStorage.getItem("rolUsuario");
 
-      //utilicen alguno de estos emails para que les aparezcan las opcione de administrar.
-      const emailsAdmin = [
-        "admin@muebleriajota.com",
-        "administrador@hermanosjota.com",
-        "test@admin.com",
-      ];
-      const esAdmin = emailsAdmin.includes(usuarioEmail);
-
-      setUsuario({
-        email: usuarioEmail,
-        rol: esAdmin ? "admin" : "user",
+    if (usuarioEmail && rolUsuario) {
+      setUsuario((prev) => {
+        if (prev?.email === usuarioEmail && prev?.rol === rolUsuario) {
+          return prev; // evita re-render si no cambió nada
+        }
+        return { email: usuarioEmail, rol: rolUsuario };
       });
-      return usuarioEmail;
     } else {
-      setUsuario(null);
-      return null;
+      setUsuario((prev) => (prev ? null : prev)); // evita cambios innecesarios
     }
   };
 
@@ -75,9 +71,7 @@ function App() {
     };
 
     window.addEventListener("storage", handleStorageChange);
-
-    // También verificar periódicamente (por si las dudas)
-    const interval = setInterval(cargarUsuario, 2000);
+    const interval = setInterval(cargarUsuario);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
@@ -103,8 +97,10 @@ function App() {
   const total = calcularTotal(carrito);
 
   const carritoFunciones = {
-    agregarProducto: (producto) =>
-      agregarProducto(carrito, setCarrito, producto),
+    agregarProducto: (producto) => {
+      agregarProducto(carrito, setCarrito, producto);
+      showToast("Producto agregado al carrito", "success");
+    },
     eliminarProducto: (id) => eliminarProducto(carrito, setCarrito, id),
     vaciarCarrito: () => vaciarCarrito(setCarrito),
     sumarCantidad: (id) => sumarCantidad(carrito, setCarrito, id),
@@ -117,22 +113,19 @@ function App() {
     window.location.href = "/";
   };
 
-  // Función para verificar si es admin
-  const esAdmin = usuario && usuario.rol === "admin";
-
-  // DEBUG: Mostrar estado del usuario en consola
-  useEffect(() => {
-    console.log("Estado usuario:", usuario);
-    console.log("Es admin:", esAdmin);
-  }, [usuario, esAdmin]);
+  const esAdmin = usuario && usuario.rol === "administrador";
+  const esEditor = usuario && usuario.rol === "editor";
 
   return (
     <Router>
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+      
       <Header
         toggleCarrito={toggleCarrito}
         carrito={carrito}
         usuario={usuario}
         esAdmin={esAdmin}
+        esEditor={esEditor}
         onLogout={handleLogout}
       />
       <CarritoLateral
@@ -162,6 +155,7 @@ function App() {
             <ProductDetail
               onAddToCart={carritoFunciones.agregarProducto}
               esAdmin={esAdmin}
+              showToast={showToast}
             />
           }
         />
@@ -170,21 +164,20 @@ function App() {
           element={<PerfilUsuario usuario={usuario} onLogout={handleLogout} />}
         />
 
-        {/* Rutas protegidas para admin */}
-        <Route
-          path="/admin"
-          element={esAdmin ? <Admin /> : <Navigate to="/" />}
-        />
-
+        {/* CRUD de productos: admin y editor */}
         <Route
           path="/admin/crear-producto"
-          element={esAdmin ? <AdminProductForm /> : <Navigate to="/" />}
+          element={(esAdmin || esEditor) ? <AdminProductForm showToast={showToast} /> : <Navigate to="/" />}
         />
         <Route
           path="/admin/editar-producto/:id"
-          element={
-            esAdmin ? <AdminProductForm editMode={true} /> : <Navigate to="/" />
-          }
+          element={(esAdmin || esEditor) ? <AdminProductForm editMode={true} showToast={showToast} /> : <Navigate to="/" />}
+        />
+
+        {/* CRUD de usuarios: solo admin */}
+        <Route
+          path="/admin"
+          element={(esAdmin || esEditor) ? <AdminPage showToast={showToast} usuario={usuario}/> : <Navigate to="/" />}
         />
       </Routes>
       <Footer />

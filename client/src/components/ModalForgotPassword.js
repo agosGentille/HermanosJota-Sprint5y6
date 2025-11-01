@@ -3,8 +3,7 @@ import '../styles/HeaderFooter.css';
 import { validarEmail } from "../utils/validarEmail";
 import ReCaptchaCheckbox from "./ReCaptchaCheckbox";
 
-function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
-  const [nombre, setNombre] = useState("");
+function ModalForgotPassword({ show, onClose, onLogin, onShowLogin}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
@@ -29,11 +28,12 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
 
   useEffect(() => {
     if (show) {
-      setNombre("");
       setEmail("");
       setPassword("");
       setPassword2("");
       setError("");
+      setCaptchaToken(null);
+      setShowCaptcha(false);
     }
   }, [show]);
 
@@ -45,6 +45,25 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
     setLoading(true);
  
     if (!showCaptcha) {
+      const { valido, error: emailError } = validarEmail(email);
+      if (!valido) {
+        setError(emailError);
+        setLoading(false);
+        return;
+      }
+
+      if (!password || !password2) {
+        setError("Complete todos los campos");
+        setLoading(false);
+        return;
+      }
+
+      if (password !== password2) {
+        setError("Las contraseñas no coinciden");
+        setLoading(false);
+        return;
+      }
+
       setShowCaptcha(true);
       setLoading(false);
       return;
@@ -59,39 +78,26 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
       return;
     }
 
-    const { valido, error: errorEmail } = validarEmail(email);
-    if (!valido) {
-      setError(errorEmail);
-      setLoading(false);
-      return;
-    }
-
-    if (password !== password2) {
-      setError("Las contraseñas no coinciden");
-      setLoading(false);
-      return;
-    }
-
     setTimeout(async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/register", {
-          method: "POST",
+        const res = await fetch("http://localhost:4000/api/usuario/password", {
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nombre, email, password, captchaToken })
+          body: JSON.stringify({ email, newPassword: password, captchaToken })
         });
 
         setLoading(false);
 
         if (!res.ok) {
           const data = await res.json();
-          setError(data.error || "Error al registrarse");
+          setError(data.error || "Error al cambiar la contraseña");
           return;
         }
 
-        const data = await res.json();
-
-       if (onShowLogin) onShowLogin();
+        alert("Contraseña actualizada. Ahora inicia sesion");
         onClose();
+
+        if (onShowLogin) onShowLogin();
       } catch (err) {
         setError("No se pudo conectar con el servidor");
         setLoading(false);
@@ -114,17 +120,23 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
           </span>
           <span className="close" onClick={onClose}>&times;</span>
         </div>
-        <h2>Registro</h2>
+        <h2>Recuperar Contraseña</h2>
         <p className={`errorLogin ${error ? "active" : ""}`}>* {error}</p>
         <form onSubmit={handleSubmit} className="loginForm">
-          <input type="text" required placeholder="Nombre Completo" value={nombre} onChange={e => setNombre(e.target.value)} />
-          <input type="email" required placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+          <input
+            type="email"
+            required
+            placeholder="Email registrado"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
           <div className="password">
             <input
               type={showPassword1 ? "text" : "password"}
+              placeholder="Nueva contraseña"
               value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Contraseña"
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <span
@@ -135,12 +147,12 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
             </span>
           </div>
 
-          <div className="repetir-password">
+          <div className="password">
             <input
               type={showPassword2 ? "text" : "password"}
+              placeholder="Repetir nueva contraseña"
               value={password2}
-              onChange={e => setPassword2(e.target.value)}
-              placeholder="Repetir Contraseña"
+              onChange={(e) => setPassword2(e.target.value)}
               required
             />
             <span
@@ -169,11 +181,18 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
             </div>
           )}
           
-          <button type="submit" className="button-submit">{loading ? "Procesando..." : "Registrarse"}</button>
+          <button type="submit" className="button-submit">
+            {loading 
+                ? "Procesando..." 
+                : showCaptcha
+                ? "Cambiar Contraseña"
+                : "Continuar"
+            }
+          </button>
         </form>
       </div>
     </div>
   );
 }
 
-export default ModalRegister;
+export default ModalForgotPassword;

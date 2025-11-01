@@ -14,10 +14,13 @@ const productRoutes = require("./routes/productRoutes.js");
 const contactoRoutes = require("./routes/ContactRoutes.js");
 const carritoRoutes = require("./routes/carritoRoutes");
 
+// ⬇️ NUEVO: importar las rutas de categorías
+const categoriesRoutes = require("./routes/categories.js");
+
 app.use(cors());
 app.use(express.json());
 
-// Middleware global que muestre método y url de la petición
+// Middleware global de logging
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
@@ -28,6 +31,9 @@ app.use("/api", usersRoutes);
 app.use("/api/productos", productRoutes);
 app.use("/api/contacto", contactoRoutes);
 app.use("/api/carrito", carritoRoutes);
+
+// ⬇️ NUEVO: montar /api/categories
+app.use("/api/categories", categoriesRoutes);
 
 app.use("/Images", express.static(path.join(__dirname, "public/images")));
 

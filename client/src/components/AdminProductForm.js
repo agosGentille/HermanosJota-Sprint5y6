@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/AdminForm.css";
 
-const AdminProductForm = ({ editMode = false }) => {
+const AdminProductForm = ({ editMode = false, inPanel = false, showToast }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [categorias, setCategorias] = useState([]);
   const [producto, setProducto] = useState({
     id: "",
     titulo: "",
@@ -34,10 +36,82 @@ const AdminProductForm = ({ editMode = false }) => {
     sostenibilidad: "",
     colchon: "",
     masVendidos: false,
-    stock: 0, // ✅ CAMPO STOCK AGREGADO
+    stock: 0, 
     imagen: "",
     imagenHover: "",
   });
+
+  // Validaciones en tiempo real
+  const validateField = (name, value) => {
+    const newErrors = { ...errors };
+    
+    switch (name) {
+      case 'titulo':
+        if (!value || value.trim() === '') {
+          newErrors.titulo = 'El título es obligatorio';
+        } else {
+          delete newErrors.titulo;
+        }
+        break;
+      case 'Precio':
+        if (!value || parseFloat(value) <= 0) {
+          newErrors.Precio = 'El precio debe ser mayor a 0';
+        } else {
+          delete newErrors.Precio;
+        }
+        break;
+      case 'categoria':
+        if (!value || value.trim() === '') {
+          newErrors.categoria = 'La categoría es obligatoria';
+        } else {
+          delete newErrors.categoria;
+        }
+        break;
+      case 'id':
+        if (!value || value.trim() === '') {
+          newErrors.id = 'El ID es obligatorio';
+        } else {
+          delete newErrors.id;
+        }
+        break;
+      case 'stock':
+        if (value < 0) {
+          newErrors.stock = 'El stock no puede ser negativo';
+        } else {
+          delete newErrors.stock;
+        }
+        break;
+      default:
+        break;
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Validar formulario completo
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!producto.titulo || producto.titulo.trim() === '') {
+      newErrors.titulo = 'El título es obligatorio';
+    }
+    if (!producto.Precio || parseFloat(producto.Precio) <= 0) {
+      newErrors.Precio = 'El precio debe ser mayor a 0';
+    }
+    if (!producto.categoria || producto.categoria.trim() === '') {
+      newErrors.categoria = 'La categoría es obligatoria';
+    }
+    if (!producto.id || producto.id.trim() === '') {
+      newErrors.id = 'El ID es obligatorio';
+    }
+    if (producto.stock < 0) {
+      newErrors.stock = 'El stock no puede ser negativo';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   // Cargar producto si está en modo edición
   useEffect(() => {
@@ -52,23 +126,45 @@ const AdminProductForm = ({ editMode = false }) => {
           setProducto(data);
         } catch (error) {
           console.error("Error:", error);
-          alert("Error al cargar el producto");
+          if (showToast) {
+            showToast("Error al cargar el producto", "error");
+          } else {
+            alert("Error al cargar el producto");
+          }
         }
       };
       fetchProducto();
     }
-  }, [editMode, id]);
+  }, [editMode, id, showToast]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const fieldValue = type === "checkbox" ? checked : value;
+    
     setProducto((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: fieldValue,
     }));
+
+    // Validar campo en tiempo real
+    if (type === "number") {
+      validateField(name, parseFloat(fieldValue) || 0);
+    } else {
+      validateField(name, fieldValue);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validar formulario completo antes de enviar
+    if (!validateForm()) {
+      if (showToast) {
+        showToast("Por favor, corrige los errores en el formulario", "error");
+      }
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -78,12 +174,19 @@ const AdminProductForm = ({ editMode = false }) => {
 
       const method = editMode ? "PUT" : "POST";
 
+      // Preparar datos para enviar (convertir tipos numéricos)
+      const datosEnviar = {
+        ...producto,
+        Precio: parseFloat(producto.Precio),
+        stock: parseInt(producto.stock) || 0
+      };
+
       const response = await fetch(url, {
         method: method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(producto),
+        body: JSON.stringify(datosEnviar),
       });
 
       if (!response.ok) {
@@ -91,18 +194,46 @@ const AdminProductForm = ({ editMode = false }) => {
         throw new Error(errorData.error || "Error al guardar el producto");
       }
 
-      // Redirigir después de guardar
-      navigate("/productos");
+      if (showToast) {
+        if (editMode) {
+          showToast("¡Producto actualizado correctamente!");
+        } else {
+          showToast("¡Producto creado correctamente!");
+        }
+      }
+
+      setTimeout(() => {
+        navigate("/productos");
+      }, 1500);
+
     } catch (error) {
       console.error("Error:", error);
-      alert(error.message);
-    } finally {
+      if (showToast) {
+        showToast(error.message, "error");
+      } else {
+        alert(error.message);
+      }
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+  const fetchCategorias = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/api/categories');
+      if (response.ok) {
+        const data = await response.json();
+        setCategorias(data);
+      }
+    } catch (error) {
+      console.error("Error cargando categorías:", error);
+    }
+  };
+  fetchCategorias();
+}, []);
+
   return (
-    <div className="admin-form-container">
+    <div className={`admin-form-container ${inPanel ? 'in-panel' : 'standalone'}`}>
       <div className="admin-form-header">
         <h2>{editMode ? "Editar Producto" : "Crear Nuevo Producto"}</h2>
         <button className="btn-volver" onClick={() => navigate("/productos")}>
@@ -111,7 +242,6 @@ const AdminProductForm = ({ editMode = false }) => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Sección: Información Básica */}
         <div className="form-section">
           <h3>Información Básica</h3>
 
@@ -125,7 +255,9 @@ const AdminProductForm = ({ editMode = false }) => {
               required
               disabled={editMode}
               placeholder="Ej: silla-ergonomica-001"
+              className={errors.id ? 'error' : ''}
             />
+            {errors.id && <span className="error-message">{errors.id}</span>}
             <small>Este ID debe ser único y no podrá cambiarse después</small>
           </div>
 
@@ -138,7 +270,9 @@ const AdminProductForm = ({ editMode = false }) => {
               onChange={handleChange}
               required
               placeholder="Nombre del producto"
+              className={errors.titulo ? 'error' : ''}
             />
+            {errors.titulo && <span className="error-message">{errors.titulo}</span>}
           </div>
 
           <div className="form-group">
@@ -161,33 +295,44 @@ const AdminProductForm = ({ editMode = false }) => {
                 value={producto.Precio}
                 onChange={handleChange}
                 required
-                min="0"
+                min="0.01"
                 step="0.01"
                 placeholder="0.00"
+                className={errors.Precio ? 'error' : ''}
               />
+              {errors.Precio && <span className="error-message">{errors.Precio}</span>}
             </div>
             <div className="form-group">
-              <label>Stock *</label>
+              <label>Stock</label>
               <input
                 type="number"
                 name="stock"
                 value={producto.stock}
                 onChange={handleChange}
-                required
                 min="0"
                 placeholder="0"
+                className={errors.stock ? 'error' : ''}
               />
+              {errors.stock && <span className="error-message">{errors.stock}</span>}
             </div>
-            <div className="form-group">
-              <label>Categoría</label>
-              <input
-                type="text"
-                name="categoria"
-                value={producto.categoria}
-                onChange={handleChange}
-                placeholder="Ej: Sillas, Mesas, Sofás..."
-              />
-            </div>
+              <div className="form-group">
+                <label>Categoría *</label>
+                <select
+                  name="categoria"
+                  value={producto.categoria}
+                  onChange={handleChange}
+                  required
+                  className={errors.categoria ? 'error' : ''}
+                >
+                  <option value="">Seleccionar categoría</option>
+                  {categorias.map(cat => (
+                    <option key={cat._id} value={cat._id}>
+                      {cat.nombre}
+                    </option>
+                  ))}
+                </select>
+                {errors.categoria && <span className="error-message">{errors.categoria}</span>}
+              </div>
           </div>
 
           <div className="form-group form-checkbox">
@@ -201,7 +346,6 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Imágenes */}
         <div className="form-section">
           <h3>Imágenes</h3>
           <div className="form-row">
@@ -230,7 +374,6 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Especificaciones Técnicas */}
         <div className="form-section">
           <h3>Especificaciones Técnicas</h3>
           <div className="form-grid">
@@ -297,7 +440,7 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Características de Confort */}
+        
         <div className="form-section">
           <h3>Características de Confort</h3>
           <div className="form-grid">
@@ -344,7 +487,6 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Características Adicionales */}
         <div className="form-section">
           <h3>Características Adicionales</h3>
           <div className="form-grid">
@@ -391,7 +533,7 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Certificaciones y Garantía */}
+        
         <div className="form-section">
           <h3>Certificaciones y Garantía</h3>
           <div className="form-grid">
@@ -438,7 +580,7 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Sección: Características Específicas */}
+       
         <div className="form-section">
           <h3>Características Específicas</h3>
           <div className="form-grid">
@@ -475,9 +617,13 @@ const AdminProductForm = ({ editMode = false }) => {
           </div>
         </div>
 
-        {/* Botones de acción */}
+        
         <div className="form-actions">
-          <button type="submit" className="btn-guardar" disabled={loading}>
+          <button 
+            type="submit" 
+            className="btn-guardar" 
+            disabled={loading || Object.keys(errors).length > 0}
+          >
             {loading
               ? "Guardando..."
               : editMode
@@ -487,7 +633,7 @@ const AdminProductForm = ({ editMode = false }) => {
           <button
             type="button"
             className="btn-cancelar"
-            onClick={() => navigate("/productos")}
+            onClick={() => navigate("/admin")}
           >
             Cancelar
           </button>
