@@ -119,7 +119,7 @@ const AdminProductForm = ({ editMode = false, inPanel = false, showToast }) => {
       const fetchProducto = async () => {
         try {
           const response = await fetch(
-            `http://localhost:4000/api/productos/${id}`
+            `https://hermanosjota-sprint5y6.onrender.com/api/productos/${id}`
           );
           if (!response.ok) throw new Error("Error cargando producto");
           const data = await response.json();
@@ -169,8 +169,8 @@ const AdminProductForm = ({ editMode = false, inPanel = false, showToast }) => {
 
     try {
       const url = editMode
-        ? `http://localhost:4000/api/productos/${id}`
-        : "http://localhost:4000/api/productos";
+        ? `https://hermanosjota-sprint5y6.onrender.com/api/productos/${id}`
+        : "https://hermanosjota-sprint5y6.onrender.com/api/productos";
 
       const method = editMode ? "PUT" : "POST";
 
@@ -220,7 +220,7 @@ const AdminProductForm = ({ editMode = false, inPanel = false, showToast }) => {
   useEffect(() => {
   const fetchCategorias = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/categories');
+      const response = await fetch('https://hermanosjota-sprint5y6.onrender.com/api/categories');
       if (response.ok) {
         const data = await response.json();
         setCategorias(data);
