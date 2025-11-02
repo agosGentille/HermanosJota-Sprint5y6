@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   clave: { type: String, required: true },
   telefono: { type: String },
-  rol: {type: mongoose.Schema.Types.ObjectId, ref: "Rol", required: true},
+  rol: {type: String, default: "visitante"},
   direccionCalle: { type: String },
   direccionLocalidad: { type: String },
   direccionProvincia: { type: String },
