@@ -11,7 +11,7 @@ const AdminProductList = ({ onAddProductClick, showToast }) => {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/productos");
+        const response = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/productos");
         if (!response.ok) throw new Error("Error cargando productos");
         const data = await response.json();
         setProductos(data);
@@ -32,7 +32,7 @@ const AdminProductList = ({ onAddProductClick, showToast }) => {
   const eliminarProducto = async (id) => {
     if (window.confirm("¿Estás seguro de que quieres eliminar este producto?")) {
       try {
-        const response = await fetch(`http://localhost:4000/api/productos/${id}`, {
+        const response = await fetch(`https://hermanosjota-sprint5y6.onrender.com/api/productos/${id}`, {
           method: "DELETE",
         });
 
