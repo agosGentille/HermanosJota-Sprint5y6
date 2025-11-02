@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import '../styles/HeaderFooter.css';
+import { API_BASE_URL } from '../config/api';
 
 function ModalLogin({ show, onClose, onLogin, onShowRegister, onShowForgot }) {
   const [nombre, setNombre] = useState("");
@@ -25,7 +26,7 @@ function ModalLogin({ show, onClose, onLogin, onShowRegister, onShowForgot }) {
     // Simular retraso
     setTimeout(async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/login", {
+        const res = await fetch(`${API_BASE_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password })

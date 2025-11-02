@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import '../styles/productDetail.css';
+import { API_BASE_URL } from '../config/api';
 
 export default function ProductDetail({ onAddToCart, esAdmin }) {
   const { id } = useParams();
@@ -15,18 +16,25 @@ export default function ProductDetail({ onAddToCart, esAdmin }) {
   useEffect(() => {
     console.log("ID desde URL:", id);
     setLoading(true);
-    fetch(`http://localhost:4000/api/productos/${id}`)
+    fetch(`${API_BASE_URL}/productos/${id}`)
       .then(res => {
         if (!res.ok) throw new Error("Producto no encontrado");
         return res.json();
       })
       .then(data => {
-        setProducto(data);
-        setImages([
-          data.imagen, 
-          data.imagenHover || null
-        ].filter(Boolean));
-      })
+  // Mapear URLs de imágenes si es necesario
+  const productoConUrls = {
+    ...data,
+    imagen: `${API_BASE_URL.replace('/api', '')}${data.imagen}`,
+    imagenHover: data.imagenHover ? `${API_BASE_URL.replace('/api', '')}${data.imagenHover}` : null
+  };
+  
+  setProducto(productoConUrls);
+  setImages([
+    productoConUrls.imagen, 
+    productoConUrls.imagenHover || null
+  ].filter(Boolean));
+})
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);
@@ -41,7 +49,7 @@ export default function ProductDetail({ onAddToCart, esAdmin }) {
   const handleEliminar = async () => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')) {
       try {
-        const response = await fetch(`http://localhost:4000/api/productos/${producto._id}`, {
+        const response = await fetch(`${API_BASE_URL}/productos/${producto._id}`, {
           method: 'DELETE'
         });
 
