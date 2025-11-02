@@ -22,7 +22,7 @@ function Productos({onAddToCart}) {
 
   /* Carga inicial de productos */
   useEffect(() => {
-    fetch("http://localhost:4000/api/productos")
+    fetch("https://hermanosjota-sprint5y6.onrender.com/api/productos")
       .then((res) => {
         if (!res.ok) throw new Error("Error al cargar los productos");
         return res.json();
