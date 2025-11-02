@@ -14,7 +14,7 @@ const AdminUser = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/users", {
+      const res = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/users", {
         headers: { "Authorization": `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Error cargando usuarios");
@@ -41,7 +41,7 @@ const AdminUser = () => {
     if (!window.confirm("¿Eliminar usuario?")) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/users/${userId}`, {
+      const res = await fetch(`https://hermanosjota-sprint5y6.onrender.com/api/users/${userId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +82,7 @@ const AdminUser = () => {
     if (!window.confirm(confirmMsg)) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/users/role/${user._id}`, {
+      const res = await fetch(`https://hermanosjota-sprint5y6.onrender.com/api/users/role/${user._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
