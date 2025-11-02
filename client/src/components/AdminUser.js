@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/AdminUser.css";
 
+import { API_BASE_URL } from '../config/api';
 const AdminUser = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
@@ -14,7 +15,7 @@ const AdminUser = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/users", {
+      const res = await fetch(`${API_BASE_URL}/users`, {
         headers: { "Authorization": `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Error cargando usuarios");
@@ -41,7 +42,7 @@ const AdminUser = () => {
     if (!window.confirm("¿Eliminar usuario?")) return;
 
     try {
-      const res = await fetch(`https://hermanosjota-sprint5y6.onrender.com/api/users/${userId}`, {
+      const res = await fetch(`${API_BASE_URL}/users/${userId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +83,7 @@ const AdminUser = () => {
     if (!window.confirm(confirmMsg)) return;
 
     try {
-      const res = await fetch(`https://hermanosjota-sprint5y6.onrender.com/api/users/role/${user._id}`, {
+      const res = await fetch(`${API_BASE_URL}/users/role/${user._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

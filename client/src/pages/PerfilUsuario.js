@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import '../styles/PerfilUsuario.css';
+import { API_BASE_URL } from '../config/api';
 
 function PerfilUsuario({ onLogout }) {
   const [usuario, setUsuario] = useState({
@@ -26,7 +27,7 @@ useEffect(() => {
           return;
         }
 
-        const res = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/usuario", {
+        const res = await fetch(`${API_BASE_URL}/usuario`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -72,7 +73,7 @@ useEffect(() => {
   setError("");
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/usuario", {
+    const res = await fetch(`${API_BASE_URL}/usuario`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +112,7 @@ useEffect(() => {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/usuario", {
+      const res = await fetch(`${API_BASE_URL}/usuario`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import '../styles/HeaderFooter.css';
 import { validarEmail } from "../utils/validarEmail";
 import ReCaptchaCheckbox from "./ReCaptchaCheckbox";
+import { API_BASE_URL } from '../config/api';
 
 function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
   const [nombre, setNombre] = useState("");
@@ -74,7 +75,7 @@ function ModalRegister({ show, onClose, onLogin, onShowLogin}) {
 
     setTimeout(async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/register", {
+        const res = await fetch(`${API_BASE_URL}/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nombre, email, password, captchaToken })
