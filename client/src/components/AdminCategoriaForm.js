@@ -47,7 +47,7 @@ const AdminCategoriaForm = ({ editMode = false, inPanel = false, showToast, cate
     if (editMode && categoriaId) {
       const fetchCategoria = async () => {
         try {
-          const response = await fetch(`http://localhost:4000/api/categories/${categoriaId}`);
+          const response = await fetch(`https://hermanosjota-sprint5y6.onrender.com/api/categories/${categoriaId}`);
           if (!response.ok) throw new Error("Error cargando categoría");
           const data = await response.json();
           setCategoria(data);
@@ -90,8 +90,8 @@ const AdminCategoriaForm = ({ editMode = false, inPanel = false, showToast, cate
 
     try {
       const url = editMode && categoriaId
-        ? `http://localhost:4000/api/categories/${categoriaId}`
-        : "http://localhost:4000/api/categories";
+        ? `https://hermanosjota-sprint5y6.onrender.com/api/categories/${categoriaId}`
+        : "https://hermanosjota-sprint5y6.onrender.com/api/categories";
 
       const method = editMode && categoriaId ? "PUT" : "POST";
 
