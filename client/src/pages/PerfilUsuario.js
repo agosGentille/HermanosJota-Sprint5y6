@@ -26,7 +26,7 @@ useEffect(() => {
           return;
         }
 
-        const res = await fetch("http://localhost:4000/api/usuario", {
+        const res = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/usuario", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -72,7 +72,7 @@ useEffect(() => {
   setError("");
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:4000/api/usuario", {
+    const res = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/usuario", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +111,7 @@ useEffect(() => {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/usuario", {
+      const res = await fetch("https://hermanosjota-sprint5y6.onrender.com/api/usuario", {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`
