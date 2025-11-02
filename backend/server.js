@@ -38,7 +38,7 @@ app.use("/api/carrito", carritoRoutes);
 // ⬇️ NUEVO: montar /api/categories
 app.use("/api/categories", categoriesRoutes);
 
-app.use("/Images", express.static(path.join(__dirname, "public/images")));
+app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 // 200
 app.get("/", (req, res) => {
