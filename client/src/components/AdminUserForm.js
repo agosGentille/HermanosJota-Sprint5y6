@@ -167,7 +167,7 @@ const AdminUserForm = ({ editMode = false }) => {
           <div className="form-group">
             <select name="rol" value={user.rol} onChange={handleChange}>
               <option value="visitante">Visitante</option>
-              <option value="admin">Administrador</option>
+              <option value="editor">Editor</option>
             </select>
           </div>
         </div>

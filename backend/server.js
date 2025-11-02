@@ -56,5 +56,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Se inició el servidor en el puerto: ${PORT}`);
-  console.log(`URL: http://localhost:${PORT}`);
+  console.log(`URL: https://hermanosjota-sprint5y6.onrender.com/`);
 });
