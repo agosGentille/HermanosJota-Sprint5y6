@@ -14,8 +14,33 @@
 
 ## Descripción del Proyecto
 
-Este proyecto forma parte de los **Sprints 5 y 6 del curso** y representa la integración completa de un sistema full stack MERN (MongoDB, Express, React, Node.js) para la gestión de productos de una mueblería.
-El sistema permite **crear, visualizar, editar y eliminar** items tales como **productos, categorías y usuarios**, todo conectado a una base de datos en la nube.
+Este proyecto forma parte de los Sprints 5 y 6 del programa NEXUS, en el cual se desarrolló un sistema full-stack MERN (MongoDB, Express, React, Node.js) con persistencia de datos en la nube.
+
+El objetivo principal fue construir un e-commerce funcional para la gestión de una mueblería, implementando:
+
+* CRUD completo de productos
+* Sistema de ruteo con React Router
+* Formularios controlados
+* Conexión real a MongoDB Atlas
+* Despliegue del Backend en Render y Frontend en Vercel
+
+### Funcionalidades del Proyecto
+
+**Backend (API con Node + Express + MongoDB)**
+* Conexión a MongoDB Atlas mediante variables de entorno
+* Modelo Product con Mongoose (nombre, descripción, precio, stock, imagen)
+* CRUD completo de productos
+* Middlewares de logging y manejo de errores
+* Validación básica de datos
+
+**Frontend (React)**
+* Navegación con React Router
+* Consumo de la API real con fetch
+* Manejo de estados de carga y error
+* Formularios controlados para creación y edición
+* Redirección con useNavigate luego de acciones (crear/eliminar)
+* Confirmación de borrado de productos
+* ReCAPTCHA para validaciones de acciones del usuario
 
 ---
 
@@ -32,6 +57,7 @@ El sistema permite **crear, visualizar, editar y eliminar** items tales como **p
 - **Express.js** → Creación de la API REST, rutas modulares y middlewares.
 - **Middlewares Personalizados** → Logging de peticiones y manejo de errores.
 - **Mongoose y MongoDB Atlas** → Modelado de datos y persistencia en la base de datos en la nube.
+- **JWT y ReCAPTCHA** --> Seguridad básica
 
 ### Despliegue
 - **Frontend**: Vercel
@@ -45,14 +71,20 @@ El sistema permite **crear, visualizar, editar y eliminar** items tales como **p
 
 ## Estructura del Proyecto
 ```
-/client     → Aplicación React (Frontend)
 /backend    → API Express (Backend)
+/client     → Aplicación React (Frontend)
 .env        → Variables de entorno (no se sube al repo)
 ```
-Flujo general del sistema
+### Flujo general del sistema
+
+```mermaid
+flowchart LR
+  A[React Client] ==> B[Express API]
+  B ==> A
+  B ==> C[MongoDB Atlas]
+  C ==> B
 ```
-React Client ⇄ Express API ⇄ MongoDB Atlas
-```
+
 ---
 
 ## Enlaces 
@@ -69,16 +101,37 @@ https://hermanosjotasprint5y6.vercel.app/
 
 ## Cómo configurar las variables de entorno (para despliegue local)
 
-1. Clonar Respositorio.
-2. Instalar Dependencias. Desde la terminal:
-   1.cd backend
-   2.npm install
-   3. ../client
+1. **Clonar Respositorio.**
+
+2. **Instalar Dependencias (desde la terminal):**
+
+   1. cd backend
+
+   2. npm install
+
+   3. cd ../client
+
    4. npm install
-4. Configurar las variables de entorno:
-   - en /backend/.env: MONGO_URI=mongodb+srv://hermanosjota:hermanosjota@cluster0.xsxpb32.mongodb.net/catalogo?retryWrites=true&w=majority
-JWT_SECRET=secreto123
-   - en /client/.env: REACT_APP_API_URL=https://hermanosjota-sprint5y6.onrender.com/api REACT_APP_RECAPTCHA_SITE_KEY=6Lc9o90rAAAAADh0SuIy0-tPHxQkKkqA7HRTzUqh
-5. Ejecutar los servidores.
-   - backend: 1. cd backend 2. npm run dev
-   - frontend: 1. cd client 2. npm start
+
+4. **Configurar las variables de entorno:**
+
+   - En /backend/.env: 
+      - MONGO_URI=mongodb+srv://hermanosjota:hermanosjota@cluster0.xsxpb32.mongodb.net/catalogo?retryWrites=true&w=majority
+      - RECAPTCHA_SECRET=6Lc9o90rAAAAAA0IXzg7Go0XXsR1_ofbSY7ZdHjC
+      - JWT_SECRET=secreto123
+
+   - En /client/.env: 
+      - REACT_APP_API_URL=https://hermanosjota-sprint5y6.onrender.com/api
+      - REACT_APP_RECAPTCHA_SITE_KEY=6Lc9o90rAAAAADh0SuIy0-tPHxQkKkqA7HRTzUqh
+
+5. **Ejecutar los servidores.**
+
+   - **Backend:**
+      1. cd backend 
+      2. npm run dev
+
+   - **Client:** 
+      1. cd client 
+      2. npm start
+
+---
